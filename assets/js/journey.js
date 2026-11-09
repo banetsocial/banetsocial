@@ -64,12 +64,31 @@
     d.addEventListener('cancel', e => { e.preventDefault(); closeDialog(d); });   // Esc
     d.addEventListener('click', e => { if (e.target === d || e.target.closest('[data-close]')) closeDialog(d); });
   }
-  function play(work) {
+  function play(work, from) {
     pv.poster = work.poster;
     pv.src = work.full;
     pcap.textContent = [work.title, work.client].filter(Boolean).join(' · ') + (work.pitch ? ` — ${work.pitch}` : '');
     openDialog(player);
-    pv.play().catch(() => {});
+    pv.play().catch(() => {});   // still inside the tap, so phones allow sound
+    if (from && !reduced) flyIn(from);
+  }
+  // the tapped card leaps off the wall, spins once and lands as the player
+  function flyIn(from) {
+    const a = from.getBoundingClientRect(), b = pv.getBoundingClientRect();
+    if (!a.width || !b.width) return;
+    const dx = a.left + a.width / 2 - (b.left + b.width / 2);
+    const dy = a.top + a.height / 2 - (b.top + b.height / 2);
+    const s = Math.max(a.width / b.width, 0.08);
+    const lift = Math.min(innerHeight * 0.12, 90);
+    const P = 'perspective(1400px) ';
+    pv.animate([
+      { transform: `${P}translate(${dx}px,${dy}px) scale(${s}) rotateY(0deg)`, filter: 'brightness(1.25)' },
+      { transform: `${P}translate(${dx * 0.4}px,${dy * 0.4 - lift}px) scale(${(s + 1) * 0.5}) rotateY(200deg)`, offset: 0.5 },
+      { transform: `${P}translate(0,0) scale(1.05) rotateY(352deg)`, offset: 0.82 },
+      { transform: `${P}translate(0,0) scale(1) rotateY(360deg)`, filter: 'brightness(1)' }
+    ], { duration: 950, easing: 'cubic-bezier(.25,.75,.3,1)' });
+    for (const el of [pcap, player.querySelector('.close')])
+      el.animate([{ opacity: 0 }, { opacity: 0, offset: 0.7 }, { opacity: 1 }], { duration: 1100 });
   }
   function openGallery(cat) {
     $('#gallery-title').textContent = SITE.cats[cat] || '';
@@ -79,7 +98,7 @@
       b.innerHTML = `<div class="thumb" style="background-image:url('${w.poster}'),url('${w.lqip}')"></div>
         <b>${w.title}</b><small>${w.client}</small>${w.pitch ? `<em>${w.pitch}</em>` : ''}`;
       b.setAttribute('aria-label', `צפייה: ${w.title}, ${w.client}`);
-      b.addEventListener('click', () => play(w));
+      b.addEventListener('click', () => play(w, b.querySelector('.thumb')));
       return b;
     }));
     openDialog(gallery);
@@ -97,7 +116,7 @@
     b.type = 'button'; b.className = cls;
     b.style.backgroundImage = `url('${w.poster}'),url('${w.lqip}')`;
     b.setAttribute('aria-label', `צפייה: ${w.title}, ${w.client}`);
-    b.addEventListener('click', () => play(w));
+    b.addEventListener('click', () => play(w, b));
     return b;
   }
 

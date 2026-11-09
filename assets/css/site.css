@@ -285,3 +285,7 @@ html:not(.js) [data-reveal] .w { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
 }
+/* player opens with the card flying in; backdrop fades under it */
+.player[open]::backdrop { animation: bd-in .5s ease both; }
+@keyframes bd-in { from { opacity: 0; } }
+.player video { transform-origin: 50% 50%; will-change: transform; }
