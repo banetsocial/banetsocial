@@ -122,62 +122,53 @@
 
   /* =====================================================================
      JOURNEY MODE
+     The rooms sit side by side in one wide "panorama". Scrolling turns the camera to the right,
+     leaning in a little mid-turn like a step forward, and settles in the next room.
+     Neighbouring rooms blend into each other over their shared edge.
      ===================================================================== */
   const journey = $('#journey'), stage = $('#stage'), canvas = $('#canvas'), ctx = canvas.getContext('2d');
   const screensLayer = $('#screens'), rail = $('#rail'), loader = $('#loader');
   stage.style.setProperty('--lqip', `url('${rooms[0].lqip}')`);
+  if (loader) loader.hidden = true;
 
   // timeline in "screens" (1 = one viewport of scroll). Phones get shorter stretches so every swipe moves something.
   const M = isMobile();
   const REST = M ? { studio: 0.45, office: 0.5 } : { studio: 0.8, office: 0.7 };
-  const REST_DEFAULT = M ? 0.7 : 1.0, TRANS = M ? 1.2 : 1.6;
-  const REST_ZOOM = 0.04;
+  const REST_DEFAULT = M ? 0.6 : 0.9, TRANS = M ? 1.25 : 1.5;
+  const REST_ZOOM = 0.035;                 // camera creeps forward while you rest in a room
+  const OVERLAP = 0.26;                    // share of a room's width that blends into its neighbour
+  const STEP = IW * (1 - OVERLAP);         // distance between rooms in the panorama (virtual px)
+  const WALK = 0.08;                       // mid-turn lean-in, as if stepping toward the next room
+  const BOB = 4;                           // footstep sway (virtual px)
+  const BLUR = M ? 0 : 3.5;                // motion blur at full turning speed (desktop only: cheap there)
+  const canBlur = BLUR > 0 && 'filter' in ctx;
   const segs = []; let total = 0;
   rooms.forEach((room, i) => {
     const len = REST[room.id] || REST_DEFAULT;
     segs.push({ type: 'rest', room: i, start: total, len }); total += len;
-    if (room.next) { segs.push({ type: 'trans', t: room.next, from: i, to: i + 1, start: total, len: TRANS }); total += TRANS; }
+    if (room.next) { segs.push({ type: 'trans', from: i, to: i + 1, start: total, len: TRANS }); total += TRANS; }
   });
   journey.style.setProperty('--journey-h', `${(total + 1) * 100}vh`);
 
   /* ---------- images ---------- */
   const stills = rooms.map(() => null);
+  // a copy of the still whose left edge fades out, so it melts into the room before it
+  function feather(img) {
+    const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
+    const g = c.getContext('2d'); g.drawImage(img, 0, 0);
+    g.globalCompositeOperation = 'destination-in';
+    const gr = g.createLinearGradient(0, 0, c.width * OVERLAP, 0);
+    gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(0.55, 'rgba(0,0,0,.45)'); gr.addColorStop(1, '#000');
+    g.fillStyle = gr; g.fillRect(0, 0, c.width, c.height);
+    return c;
+  }
   function loadStill(i) {
+    if (i < 0 || i >= rooms.length) return null;
     if (stills[i]) return stills[i];
     const img = new Image(); img.decoding = 'async';
-    img.src = `${rooms[i].still}-${isMobile() ? 720 : 1280}.webp`;
-    img.onload = () => schedule();
+    img.onload = () => { img._ok = true; if (i > 0) img._f = feather(img); schedule(); };
+    img.src = `${rooms[i].still}-1280.webp`;
     return (stills[i] = img);
-  }
-  const frames = {};                         // t -> Image[]
-  const queue = []; let inflight = 0;
-  function loadTransition(tid) {
-    if (!tid || frames[tid]) return;
-    const t = transitions[tid]; const dir = isMobile() ? t.mobile : t.desktop;
-    frames[tid] = Array.from({ length: t.frames }, (_, k) => {
-      const img = new Image(); img.decoding = 'async'; img._src = `${dir}${String(k + 1).padStart(4, '0')}.webp`; img._ok = false;
-      queue.push(img); return img;
-    });
-    pump();
-  }
-  // frames load before videos: on a phone connection the scroll must react first
-  const idleWaiters = [];
-  const framesIdle = () => !queue.length && !inflight;
-  function whenFramesIdle(cb) { if (framesIdle()) cb(); else idleWaiters.push(cb); }
-  function pump() {
-    while (inflight < 6 && queue.length) {
-      const img = queue.shift(); inflight++;
-      img.onload = () => { img._ok = true; inflight--; pump(); schedule(); updateLoader(); };
-      img.onerror = () => { inflight--; pump(); };
-      img.src = img._src;
-    }
-    if (framesIdle()) idleWaiters.splice(0).forEach(cb => cb());
-  }
-  function updateLoader() {
-    const seg = current.seg; const tid = seg && (seg.type === 'trans' ? seg.t : rooms[seg.room].next);
-    const f = tid && frames[tid];
-    const p = f ? f.filter(i => i._ok).length / f.length : 1;
-    loader.style.setProperty('--load', p >= 1 ? 0 : p);
   }
 
   /* ---------- canvas & cover mapping ---------- */
@@ -190,31 +181,72 @@
     view.dx = (view.w - IW * view.s) / 2; view.dy = (view.h - IH * view.s) / 2;
     layoutScreens(); schedule(true);
   }
-  // z > 1 zooms toward the focal point (fx, fy in image %) — a gentle "camera breathing in"
-  function drawFull(img, z = 1, fx = 50, fy = 40) {
-    ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
-    const [px, py] = toScreen([fx, fy]);
-    ctx.translate(px, py); ctx.scale(z, z); ctx.translate(-px, -py);
-    ctx.drawImage(img, view.dx, view.dy, IW * view.s, IH * view.s);
-  }
+  // room-relative image % → stage px, for a room at rest with no zoom (screens are laid out in this frame)
+  const toScreen = ([px, py]) => [view.dx + px / 100 * IW * view.s, view.dy + py / 100 * IH * view.s];
   const focal = ri => {
     const p = rooms[ri] && rooms[ri].portal;
     return p ? [(p[0][0] + p[1][0]) / 2, (p[0][1] + p[2][1]) / 2] : [50, 40];
   };
-  function zoomScreens(z, ri) {
-    const [px, py] = toScreen(focal(ri));
-    screensLayer.style.transformOrigin = `${px}px ${py}px`;
-    screensLayer.style.transform = z === 1 ? '' : `scale(${z})`;
+
+  /* ---------- camera ---------- */
+  // cam = { x, y } centre of view in panorama px, z = zoom (1 = cover fit)
+  const roomX = i => i * STEP;
+  function restCam(i, t) {
+    const z = rooms[i].next ? 1 + REST_ZOOM * t : 1;
+    const [fx, fy] = focal(i);
+    const Fx = roomX(i) + fx / 100 * IW, Fy = fy / 100 * IH;     // zoom toward the room's centre screen
+    const Cx = roomX(i) + IW / 2, Cy = IH / 2;
+    return { x: Fx + (Cx - Fx) / z, y: Fy + (Cy - Fy) / z, z, blur: 0 };
   }
-  function drawFrame(img, z = 1, fx = 50, fy = 40) {
-    if (!isMobile()) return drawFull(img, z, fx, fy);
-    const cw = IH * MOBILE_CROP, x = (IW - cw) / 2;   // mobile frame covers the centre strip only
+  const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const band = (p, a, b) => Math.min(Math.max((p - a) / (b - a), 0), 1);
+  function transCam(seg, t) {
+    const a = restCam(seg.from, 1), b = restCam(seg.to, 0);
+    const p = ease(t), arc = Math.sin(Math.PI * p);
+    const z = a.z + (b.z - a.z) * p + WALK * arc;
+    const y = a.y + (b.y - a.y) * p + BOB * Math.sin(p * Math.PI * 6) * arc;
+    // speed of the turn (derivative of the eased curve) drives the motion blur
+    const speed = t < 0.5 ? 12 * t * t : 12 * (1 - t) * (1 - t);
+    return { x: a.x + (b.x - a.x) * p, y, z, blur: canBlur ? BLUR * Math.min(speed / 3, 1) : 0, p };
+  }
+  function clampCam(cam) {   // never show past the top/bottom of the images
+    const half = view.h / 2 / (view.s * cam.z);
+    cam.y = Math.min(Math.max(cam.y, half), IH - half);
+    return cam;
+  }
+
+  /* ---------- per-room screen layers (they ride along with the camera) ---------- */
+  const layers = rooms.map((_, ri) => {
+    const L = document.createElement('div'); L.className = 'room-layer'; L.dataset.room = ri;
+    screensLayer.append(L); return L;
+  });
+
+  function draw(cam, opacity) {
+    const S = view.s * cam.z, halfW = view.w / 2 / S;
     ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
-    const [px, py] = toScreen([fx, fy]);
-    ctx.translate(px, py); ctx.scale(z, z); ctx.translate(-px, -py);
-    ctx.drawImage(img, view.dx + x * view.s, view.dy, cw * view.s, IH * view.s);
+    ctx.fillStyle = '#061A22'; ctx.fillRect(0, 0, view.w, view.h);
+    ctx.filter = cam.blur > 0.3 ? `blur(${cam.blur.toFixed(1)}px)` : 'none';
+    const top = view.h / 2 - cam.y * S;
+    rooms.forEach((_, i) => {
+      const x0 = roomX(i), inView = x0 < cam.x + halfW && x0 + IW > cam.x - halfW;
+      const L = layers[i], o = inView ? (opacity[i] || 0) : 0;
+      L.style.opacity = o; L.classList.toggle('vis', o > 0.01);
+      if (!inView) return;
+      const img = loadStill(i);
+      if (img && img._ok) {
+        // the next room's left edge fades so the two rooms melt together
+        const src = img._f && x0 > cam.x - halfW ? img._f : img;
+        ctx.drawImage(src, view.w / 2 + (x0 - cam.x) * S, top, IW * S, IH * S);
+      }
+      if (o > 0.01) {
+        // same affine map as the canvas: room-relative layout → panorama → camera
+        const tx = view.w / 2 + (x0 - cam.x) * S - cam.z * view.dx, ty = top - cam.z * view.dy;
+        L.style.transform = `translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) scale(${cam.z.toFixed(4)})`;
+        L.style.filter = cam.blur > 0.3 ? `blur(${cam.blur.toFixed(1)}px)` : '';
+      }
+    });
+    ctx.filter = 'none';
   }
-  const toScreen = ([px, py]) => [view.dx + px / 100 * IW * view.s, view.dy + py / 100 * IH * view.s];
 
   /* ---------- projective mapping for video screens ---------- */
   const BW = 180, BH = 320;                        // base element size (9:16)
@@ -249,7 +281,7 @@
     for (const s of list) {
       const el = card(s.work, 'screen' + (s.portal ? ' portal' : ' side'));
       el.dataset.room = ri; el.inert = true; el.tabIndex = -1;
-      s.el = el; screensLayer.append(el);
+      s.el = el; layers[ri].append(el);
     }
     return list;
   });
@@ -260,12 +292,9 @@
 
   /* ---------- video playback ---------- */
   const playing = new Set();
+  let videoRoom = -1;
   function startVideo(holder, w) {
     if (playing.size >= MAX_PLAY() || holder.querySelector('video')) return;
-    if (isMobile() && !framesIdle()) {           // phone: let the next transition's frames win the bandwidth
-      whenFramesIdle(() => { if (holder.isConnected && (holder.classList.contains('on') || holder.closest('.rail'))) startVideo(holder, w); });
-      return;
-    }
     const v = document.createElement('video');
     Object.assign(v, { muted: true, loop: true, playsInline: true, autoplay: true, preload: 'auto', poster: w.poster });
     v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('aria-hidden', 'true');
@@ -276,55 +305,78 @@
   function stopVideos(container) {
     $$('video', container).forEach(v => { v.pause(); v.removeAttribute('src'); v.load(); v.remove(); playing.delete(v); });
   }
-
-  /* ---------- mobile rail ---------- */
-  let railRoom = -1;
-  const railIO = new IntersectionObserver(entries => {
-    for (const e of entries) {
-      const w = worksById[e.target.dataset.id];
-      if (e.isIntersecting && e.intersectionRatio >= 0.5) startVideo(e.target, w);
-      else stopVideos(e.target);
-    }
-  }, { root: rail, threshold: [0, 0.5] });
-  function fillRail(ri) {
-    if (railRoom === ri) return;
-    $$('.rail-card', rail).forEach(c => { railIO.unobserve(c); stopVideos(c); });
-    rail.replaceChildren(); railRoom = ri;
-    worksForRoom(rooms[ri]).slice(0, 8).forEach(w => {
-      const c = card(w, 'rail-card'); c.dataset.id = w.id; c.innerHTML = `<span>${w.title}</span>`;
-      rail.append(c); railIO.observe(c);
-    });
-  }
-
-  /* ---------- room activation ---------- */
-  let activeRoom = -1;
-  function activateRoom(ri) {
-    if (ri === activeRoom) return;
-    if (activeRoom >= 0) {
-      roomScreens[activeRoom].forEach(s => { s.el.classList.remove('on'); s.el.inert = true; s.el.tabIndex = -1; stopVideos(s.el); });
-      $(`.room-ui[data-room="${rooms[activeRoom].id}"]`)?.classList.remove('on');
-    }
-    activeRoom = ri;
-    // phone rail lives in the work rooms; the opening room keeps the screen clear for the showreel and the scroll hint
-    rail.classList.toggle('on', ri > 0 && isMobile() && !!rooms[ri].category);
+  // which room's screens are live (videos + clickable). During a turn this hands over at the midpoint.
+  function setVideoRoom(ri) {
+    if (ri === videoRoom) return;
+    if (videoRoom >= 0) roomScreens[videoRoom].forEach(s => { s.el.inert = true; s.el.tabIndex = -1; stopVideos(s.el); });
+    videoRoom = ri;
     if (ri < 0) return;
-    $(`.room-ui[data-room="${rooms[ri].id}"]`)?.classList.add('on');
-    const list = roomScreens[ri];
-    // portal first, then the screens nearest the centre
-    const order = list.slice().sort((a, b) => (b.portal - a.portal) ||
+    // portal first, then the screens nearest the centre; phones play only the centre screen (the rail has the rest)
+    const order = roomScreens[ri].slice().sort((a, b) => (b.portal - a.portal) ||
       (Math.abs(a.quad[0][0] - 50) - Math.abs(b.quad[0][0] - 50)));
     for (const s of order) {
-      const visible = !(isMobile() && !s.portal);
-      s.el.classList.add('on'); s.el.inert = !visible; s.el.tabIndex = visible ? 0 : -1;
-      if (visible) startVideo(s.el, s.work);
+      const live = s.portal || !isMobile();
+      s.el.inert = !live; s.el.tabIndex = live ? 0 : -1;
+      if (live) startVideo(s.el, s.work);
     }
-    if (isMobile() && ri > 0 && rooms[ri].category) fillRail(ri);
+  }
+
+  /* ---------- mobile rail: a small cover-flow of this room's works ---------- */
+  let railRoom = -1, railTimer = 0;
+  function fillRail(ri) {
+    if (railRoom === ri) return;
+    $$('.rail-card', rail).forEach(stopVideos);
+    rail.replaceChildren(); railRoom = ri;
+    worksForRoom(rooms[ri]).slice(0, 8).forEach((w, k) => {
+      const c = card(w, 'rail-card'); c.dataset.id = w.id; c.style.setProperty('--i', k);
+      c.innerHTML = `<span>${w.title}</span>`;
+      rail.append(c);
+    });
+    rail.scrollLeft = 0;
+    shapeRail();
+  }
+  // each card leans and shrinks with its distance from the centre; only the centre card plays
+  function shapeRail() {
+    const r = rail.getBoundingClientRect(), mid = r.left + r.width / 2;
+    let best = null, bestD = 9;
+    for (const c of $$('.rail-card', rail)) {
+      const b = c.getBoundingClientRect();
+      const d = Math.max(-2, Math.min(2, (b.left + b.width / 2 - mid) / b.width));
+      const a = Math.min(Math.abs(d), 1);
+      c.style.setProperty('--ry', `${(d * 18).toFixed(1)}deg`);
+      c.style.setProperty('--sc', (1 - a * 0.16).toFixed(3));
+      c.style.setProperty('--dim', (1 - a * 0.3).toFixed(3));
+      c.classList.toggle('centre', a < 0.5);
+      if (Math.abs(d) < bestD) { bestD = Math.abs(d); best = c; }
+    }
+    clearTimeout(railTimer);
+    railTimer = setTimeout(() => {
+      if (!rail.classList.contains('on')) return;
+      $$('.rail-card', rail).forEach(c => { if (c !== best) stopVideos(c); });
+      if (best && bestD < 0.5) startVideo(best, worksById[best.dataset.id]);
+    }, 180);
+  }
+  rail.addEventListener('scroll', () => requestAnimationFrame(shapeRail), { passive: true });
+
+  /* ---------- room captions ---------- */
+  let uiRoom = -1;
+  function setUI(ri) {
+    if (ri === uiRoom) return;
+    if (uiRoom >= 0) $(`.room-ui[data-room="${rooms[uiRoom].id}"]`)?.classList.remove('on');
+    uiRoom = ri;
+    // phone rail lives in the work rooms; the opening room keeps the screen clear for the showreel and the scroll hint
+    const railOn = ri > 0 && isMobile() && !!rooms[ri].category;
+    if (railOn) fillRail(ri);
+    else $$('.rail-card', rail).forEach(stopVideos);
+    rail.classList.toggle('on', railOn);
+    if (railOn) shapeRail();
+    if (ri >= 0) $(`.room-ui[data-room="${rooms[ri].id}"]`)?.classList.add('on');
   }
 
   /* ---------- scroll → state ---------- */
   const current = { seg: null, t: 0 };
-  let raf = 0, force = false;
-  function schedule(f) { force = force || !!f; if (!raf) raf = requestAnimationFrame(render); }
+  let raf = 0;
+  function schedule() { if (!raf) raf = requestAnimationFrame(render); }
   function render() {
     raf = 0;
     const top = journey.getBoundingClientRect().top;
@@ -333,72 +385,55 @@
     const t = (p - seg.start) / seg.len;
     current.seg = seg; current.t = t;
 
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
     if (seg.type === 'rest') {
-      const img = loadStill(seg.room);
-      // the camera creeps forward while you rest in a room, so scrolling always answers
-      const z = rooms[seg.room].next ? 1 + REST_ZOOM * t : 1;
-      const [fx, fy] = focal(seg.room);
-      if (img.complete && img.naturalWidth) drawFull(img, z, fx, fy);
-      zoomScreens(z, seg.room);
-      activateRoom(seg.room);
-      // preload: this room's outgoing transition, and the one that brought us here
-      loadTransition(rooms[seg.room].next); loadStill(seg.room + 1 < rooms.length ? seg.room + 1 : seg.room);
+      draw(clampCam(restCam(seg.room, t)), { [seg.room]: 1 });
+      setVideoRoom(seg.room); setUI(seg.room);
+      loadStill(seg.room + 1);
     } else {
-      activateRoom(-1); zoomScreens(1, 0);
-      loadTransition(seg.t);
-      const next = rooms[seg.to].next; if (t > 0.5) loadTransition(next);
-      const f = frames[seg.t];
-      let k = Math.round(t * (f.length - 1)), img = null;
-      for (let j = k; j >= 0; j--) if (f[j]._ok) { img = f[j]; break; }
-      const [fx, fy] = focal(seg.from);
-      // hand-off: the rest ended slightly zoomed; ease that back out while the real push-in takes over
-      if (img) drawFrame(img, 1 + REST_ZOOM * Math.max(0, 1 - t / 0.2), fx, fy);
-      else {
-        // frames still downloading: fake the push-in on the still so the scroll is never "dead"
-        const s = loadStill(seg.from);
-        if (s.complete) drawFull(s, 1 + REST_ZOOM + 2.2 * t * t, fx, fy);
-      }
+      const cam = clampCam(transCam(seg, t));
+      // screens of the room we leave fade out as we turn away; the next room's fade in as it arrives
+      draw(cam, { [seg.from]: 1 - band(cam.p, 0.2, 0.55), [seg.to]: band(cam.p, 0.45, 0.8) });
+      setUI(-1); setVideoRoom(cam.p < 0.5 ? seg.from : seg.to);
+      loadStill(seg.to + 1);
     }
-    updateLoader();
-    force = false;
   }
 
-  addEventListener('scroll', () => schedule(), { passive: true });
-  addEventListener('resize', () => { railRoom = -1; resize(); });
+  addEventListener('scroll', schedule, { passive: true });
+  addEventListener('resize', () => { railRoom = -1; uiRoom = -1; resize(); });
   // stop everything when the tab is hidden
   document.addEventListener('visibilitychange', () => { if (document.hidden) playing.forEach(v => v.pause()); else playing.forEach(v => v.play().catch(() => {})); });
 
-  loadStill(0);
+  loadStill(0); loadStill(1);
   resize();
 
   /* =====================================================================
      CALIBRATION MODE (?calibrate)
      ===================================================================== */
   let handles = [];
+  const activeRoomForCal = () => uiRoom;
   function placeHandles() {
-    if (activeRoom < 0) return;
+    const ri = activeRoomForCal(); if (ri < 0) return;
     let h = 0;
-    roomScreens[activeRoom].forEach(s => s.quad.forEach(pt => {
+    roomScreens[ri].forEach(s => s.quad.forEach(pt => {
       const [x, y] = toScreen(pt); const el = handles[h++]; if (el) el.style.transform = `translate(${x}px,${y}px)`;
     }));
   }
   if (calibrate) {
     document.documentElement.classList.add('calibrate');
     const panel = document.createElement('div'); panel.className = 'cal-panel';
-    panel.innerHTML = '<b>Calibrate</b> — scroll to a room, drag the red dots, then copy:<textarea readonly></textarea>';
+    panel.innerHTML = '<b>Calibrate</b> — scroll to the start of a room, drag the red dots, then copy:<textarea readonly></textarea>';
     document.body.append(panel);
     const ta = $('textarea', panel);
     const dump = () => {
-      if (activeRoom < 0) return;
-      const room = rooms[activeRoom], list = roomScreens[activeRoom];
+      const ri = activeRoomForCal(); if (ri < 0) return;
+      const room = rooms[ri], list = roomScreens[ri];
       const portal = list.find(s => s.portal);
       ta.value = JSON.stringify({ room: room.id, portal: portal ? portal.quad : null, screens: list.filter(s => !s.portal).map(s => s.quad) });
     };
     const rebuild = () => {
       handles.forEach(h => h.remove()); handles = [];
-      if (activeRoom < 0) return;
-      roomScreens[activeRoom].forEach(s => s.quad.forEach((pt, qi) => {
+      const ri = activeRoomForCal(); if (ri < 0) return;
+      roomScreens[ri].forEach(s => s.quad.forEach((pt, qi) => {
         const d = document.createElement('div'); d.className = 'cal-handle'; stage.append(d); handles.push(d);
         d.addEventListener('pointerdown', e => {
           d.setPointerCapture(e.pointerId);
@@ -414,7 +449,7 @@
       placeHandles(); dump();
     };
     let lastRoom = -2;
-    addEventListener('scroll', () => requestAnimationFrame(() => { if (activeRoom !== lastRoom) { lastRoom = activeRoom; rebuild(); } }), { passive: true });
+    addEventListener('scroll', () => requestAnimationFrame(() => { if (uiRoom !== lastRoom) { lastRoom = uiRoom; rebuild(); } }), { passive: true });
     setTimeout(rebuild, 300);
   }
 })();

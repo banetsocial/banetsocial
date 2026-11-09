@@ -75,7 +75,10 @@ button { font: inherit; color: inherit; }
 .no-js .stage, html:not(.js) .stage { position: relative; }
 
 /* video overlays mapped onto the painted screens */
-.screens { position: absolute; inset: 0; pointer-events: none; }
+.screens { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+/* one layer per room; JS moves it with the camera */
+.room-layer { position: absolute; inset: 0; transform-origin: 0 0; visibility: hidden; will-change: transform, opacity; }
+.room-layer.vis { visibility: visible; }
 .screen {
   position: absolute; inset-block-start: 0; left: 0;   /* physical left: matrix3d math is LTR */
   inline-size: 180px; block-size: 320px;
@@ -83,10 +86,8 @@ button { font: inherit; color: inherit; }
   pointer-events: auto;
   border: 0; padding: 0; margin: 0; cursor: pointer;
   background: #000 center / cover no-repeat;
-  opacity: 0; transition: opacity .5s ease;
   overflow: hidden;
 }
-.screen.on { opacity: 1; }
 .screen video { inline-size: 100%; block-size: 100%; object-fit: cover; }
 .screen::after { /* glass sheen + frame glow so the video sits "inside" the room */
   content: ""; position: absolute; inset: 0;
@@ -129,23 +130,45 @@ button { font: inherit; color: inherit; }
 }
 .all-btn:hover { background: rgba(46, 196, 214, .15); }
 
-/* mobile monitor rail */
+/* mobile rail: a small cover-flow of the room's works */
 .rail {
-  position: absolute; z-index: 4; inset-inline: 0; inset-block-end: max(16px, env(safe-area-inset-bottom));
-  display: none; gap: 12px; padding-inline: var(--gutter);
+  position: absolute; z-index: 4; inset-inline: 0; inset-block-end: max(14px, env(safe-area-inset-bottom));
+  display: none; gap: 0; align-items: center;
+  padding-inline: calc(50% - var(--card-w) / 2); padding-block: 10px 6px;
+  --card-w: min(34vw, 142px);
   overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
-  opacity: 0; transition: opacity .4s ease;
+  perspective: 700px;
+  opacity: 0; visibility: hidden; transition: opacity .45s ease, visibility .45s;
 }
 .rail::-webkit-scrollbar { display: none; }
-.rail.on { opacity: 1; }
+.rail.on { opacity: 1; visibility: visible; }
 .rail-card {
-  flex: 0 0 auto; inline-size: 34vw; max-inline-size: 150px; aspect-ratio: 9 / 16;
-  scroll-snap-align: center; border: 0; padding: 0; border-radius: 6px; overflow: hidden;
-  background: #000 center / cover no-repeat; box-shadow: var(--glow); cursor: pointer; position: relative;
+  flex: 0 0 auto; inline-size: var(--card-w); aspect-ratio: 9 / 16; margin-inline: -6px;
+  scroll-snap-align: center; scroll-snap-stop: always;
+  border: 0; padding: 0; border-radius: 14px; overflow: hidden; position: relative; cursor: pointer;
+  background: #000 center / cover no-repeat;
+  transform: rotateY(var(--ry, 0deg)) scale(var(--sc, 1));
+  filter: brightness(var(--dim, 1));
+  box-shadow: 0 0 0 1px rgba(46, 196, 214, .35), 0 14px 30px rgba(0, 0, 0, .55);
+  transition: box-shadow .3s ease;
 }
+.rail-card.centre { z-index: 1; box-shadow: 0 0 0 1.5px var(--accent), 0 0 26px rgba(46, 196, 214, .45), 0 18px 36px rgba(0, 0, 0, .6); }
+.rail.on .rail-card { animation: rail-in .6s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i, 0) * 70ms); }
+@keyframes rail-in { from { opacity: 0; translate: 0 40px; } to { opacity: 1; translate: 0 0; } }
 .rail-card video { inline-size: 100%; block-size: 100%; object-fit: cover; }
-.rail-card span { position: absolute; inset-inline: 0; inset-block-end: 0; padding: 18px 8px 6px; font-size: .78rem; line-height: 1.25;
-  background: linear-gradient(transparent, rgba(0, 0, 0, .8)); text-align: start; }
+.rail-card::after { /* glass sheen */
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(120deg, rgba(255, 255, 255, .14), transparent 38%);
+}
+.rail-card span { position: absolute; inset-inline: 0; inset-block-end: 0; z-index: 1; padding: 26px 10px 9px;
+  font-size: .8rem; line-height: 1.25; text-align: center; color: var(--text);
+  background: linear-gradient(transparent, rgba(4, 16, 21, .88)); opacity: .0; transition: opacity .3s ease; }
+.rail-card.centre span { opacity: 1; }
+.rail-card.centre::before { /* play hint */
+  content: ""; position: absolute; z-index: 1; inset-block-start: 10px; inset-inline-end: 10px; inline-size: 26px; block-size: 26px;
+  border-radius: 50%; background: rgba(4, 16, 21, .55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 7l8 5-8 5z' fill='%232EC4D6'/%3E%3C/svg%3E") center / 18px no-repeat;
+  box-shadow: 0 0 0 1px rgba(46, 196, 214, .6);
+}
 
 .loader { position: absolute; inset-inline: 0; inset-block-end: 0; block-size: 2px; background: var(--accent);
   transform-origin: right; transform: scaleX(var(--load, 0)); transition: transform .2s; opacity: .8; }
@@ -228,7 +251,7 @@ dialog::backdrop { background: rgba(2, 10, 14, .82); backdrop-filter: blur(8px);
 
 /* ---------- Mobile ---------- */
 @media (max-width: 767px) {
-  .screen.side { display: none; }
+  .screen.side { pointer-events: none; }
   .rail { display: flex; }
   .room-ui { inset-block-end: auto; inset-block-start: max(18px, env(safe-area-inset-top)); }
   .room-ui .lead { font-size: var(--step-0); }
@@ -253,7 +276,8 @@ dialog::backdrop { background: rgba(2, 10, 14, .82); backdrop-filter: blur(8px);
 .static .room-ui .w { opacity: 1; transform: none; }
 .static .rail { display: none; }
 .static .room-ui .static-rail { display: flex; gap: 12px; overflow-x: auto; padding-block: 16px 4px; }
-.static .room-ui .static-rail .rail-card { inline-size: 120px; }
+.static .room-ui .static-rail .rail-card { inline-size: 120px; margin: 0; }
+.static .room-ui .static-rail .rail-card span { opacity: 1; }
 html:not(.js) .room-ui { position: relative; opacity: 1; visibility: visible; inset: auto; max-inline-size: none; padding: 40px var(--gutter); }
 html:not(.js) .stage canvas, html:not(.js) .rail, html:not(.js) .all-btn, html:not(.js) .cue { display: none; }
 html:not(.js) [data-reveal] .w { opacity: 1; transform: none; }
