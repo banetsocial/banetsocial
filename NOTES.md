@@ -3,7 +3,7 @@
 קובץ מצב לפרויקט, כדי שכל סשן חדש ימשיך מאיפה שעצרנו. ההנחיות המלאות ב־PROMPT.md.
 
 ## מצב נוכחי
-- **האתר באוויר:** https://yosibanet-debug.github.io/banetsocial/ (GitHub Pages, ריפו github.com/yosibanet-debug/banetsocial, gh נייד ב־C:/Users/User/tools/gh/bin/gh.exe).
+- **האתר באוויר:** https://banetsocial.github.io/banetsocial/ (GitHub Pages, ריפו github.com/yosibanet-debug/banetsocial, gh נייד ב־C:/Users/User/tools/gh/bin/gh.exe).
 - המעברים עדיין טיוטות 480p. יוסי יחליט אילו לשדרג אחרי שיראה בטלפון.
 - פתוח: שינוי שם המשתמש ב־GitHub ל־banetsocial (יוסי עושה מהטלפון) ← לעדכן את canonical ו־og:image. פוסטרים חלשים: jerusalem, bichler, ai-koenig, newborn. שלב 4 (Lighthouse, תנועה מופחתת, 3G איטי, כיול) לא בוצע.
 - 34 עבודות קודדו (previews 28MB, full 614MB מחוץ ל־git). works.json נבנה. פוסטרים חלשים לתיקון: jerusalem, bichler, ai-koenig, newborn.

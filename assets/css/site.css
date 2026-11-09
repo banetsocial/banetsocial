@@ -232,8 +232,13 @@ dialog::backdrop { background: rgba(2, 10, 14, .82); backdrop-filter: blur(8px);
   .rail { display: flex; }
   .room-ui { inset-block-end: auto; inset-block-start: max(18px, env(safe-area-inset-top)); }
   .room-ui .lead { font-size: var(--step-0); }
-  .stage::after { inset-block-start: 0; inset-block-end: auto; block-size: 30%; background: linear-gradient(rgba(4, 16, 21, .8), transparent); }
-  .brand, .cue { display: none; }
+  .stage::after { inset: 0; block-size: auto;
+    background: linear-gradient(rgba(4, 16, 21, .82), transparent 28%, transparent 62%, rgba(4, 16, 21, .85)); }
+  .brand { display: none; }
+  /* opening room on phones: text at the bottom, centre screen clear, a clear "scroll" hint */
+  .room-ui[data-room="studio"] { inset-block-start: auto; inset-block-end: max(22px, env(safe-area-inset-bottom)); }
+  .room-ui[data-room="studio"] .headline { font-size: 2.1rem; }
+  .cue { font-size: 1.05rem; }
   .wa-float span { display: none; }
   .wa-float { padding: 14px; }
 }

@@ -127,8 +127,11 @@
   const screensLayer = $('#screens'), rail = $('#rail'), loader = $('#loader');
   stage.style.setProperty('--lqip', `url('${rooms[0].lqip}')`);
 
-  // timeline in "screens" (1 = one viewport of scroll)
-  const REST = { studio: 1.15, office: 0.7 }, REST_DEFAULT = 1.0, TRANS = 1.7;
+  // timeline in "screens" (1 = one viewport of scroll). Phones get shorter stretches so every swipe moves something.
+  const M = isMobile();
+  const REST = M ? { studio: 0.45, office: 0.5 } : { studio: 0.8, office: 0.7 };
+  const REST_DEFAULT = M ? 0.7 : 1.0, TRANS = M ? 1.2 : 1.6;
+  const REST_ZOOM = 0.04;
   const segs = []; let total = 0;
   rooms.forEach((room, i) => {
     const len = REST[room.id] || REST_DEFAULT;
@@ -157,6 +160,10 @@
     });
     pump();
   }
+  // frames load before videos: on a phone connection the scroll must react first
+  const idleWaiters = [];
+  const framesIdle = () => !queue.length && !inflight;
+  function whenFramesIdle(cb) { if (framesIdle()) cb(); else idleWaiters.push(cb); }
   function pump() {
     while (inflight < 6 && queue.length) {
       const img = queue.shift(); inflight++;
@@ -164,6 +171,7 @@
       img.onerror = () => { inflight--; pump(); };
       img.src = img._src;
     }
+    if (framesIdle()) idleWaiters.splice(0).forEach(cb => cb());
   }
   function updateLoader() {
     const seg = current.seg; const tid = seg && (seg.type === 'trans' ? seg.t : rooms[seg.room].next);
@@ -182,14 +190,28 @@
     view.dx = (view.w - IW * view.s) / 2; view.dy = (view.h - IH * view.s) / 2;
     layoutScreens(); schedule(true);
   }
-  function drawFull(img) {
+  // z > 1 zooms toward the focal point (fx, fy in image %) — a gentle "camera breathing in"
+  function drawFull(img, z = 1, fx = 50, fy = 40) {
     ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
+    const [px, py] = toScreen([fx, fy]);
+    ctx.translate(px, py); ctx.scale(z, z); ctx.translate(-px, -py);
     ctx.drawImage(img, view.dx, view.dy, IW * view.s, IH * view.s);
   }
-  function drawFrame(img) {
-    if (!isMobile()) return drawFull(img);
+  const focal = ri => {
+    const p = rooms[ri] && rooms[ri].portal;
+    return p ? [(p[0][0] + p[1][0]) / 2, (p[0][1] + p[2][1]) / 2] : [50, 40];
+  };
+  function zoomScreens(z, ri) {
+    const [px, py] = toScreen(focal(ri));
+    screensLayer.style.transformOrigin = `${px}px ${py}px`;
+    screensLayer.style.transform = z === 1 ? '' : `scale(${z})`;
+  }
+  function drawFrame(img, z = 1, fx = 50, fy = 40) {
+    if (!isMobile()) return drawFull(img, z, fx, fy);
     const cw = IH * MOBILE_CROP, x = (IW - cw) / 2;   // mobile frame covers the centre strip only
     ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
+    const [px, py] = toScreen([fx, fy]);
+    ctx.translate(px, py); ctx.scale(z, z); ctx.translate(-px, -py);
     ctx.drawImage(img, view.dx + x * view.s, view.dy, cw * view.s, IH * view.s);
   }
   const toScreen = ([px, py]) => [view.dx + px / 100 * IW * view.s, view.dy + py / 100 * IH * view.s];
@@ -240,6 +262,10 @@
   const playing = new Set();
   function startVideo(holder, w) {
     if (playing.size >= MAX_PLAY() || holder.querySelector('video')) return;
+    if (isMobile() && !framesIdle()) {           // phone: let the next transition's frames win the bandwidth
+      whenFramesIdle(() => { if (holder.isConnected && (holder.classList.contains('on') || holder.closest('.rail'))) startVideo(holder, w); });
+      return;
+    }
     const v = document.createElement('video');
     Object.assign(v, { muted: true, loop: true, playsInline: true, autoplay: true, preload: 'auto', poster: w.poster });
     v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('aria-hidden', 'true');
@@ -279,7 +305,8 @@
       $(`.room-ui[data-room="${rooms[activeRoom].id}"]`)?.classList.remove('on');
     }
     activeRoom = ri;
-    rail.classList.toggle('on', ri >= 0 && isMobile() && !!rooms[ri].category);
+    // phone rail lives in the work rooms; the opening room keeps the screen clear for the showreel and the scroll hint
+    rail.classList.toggle('on', ri > 0 && isMobile() && !!rooms[ri].category);
     if (ri < 0) return;
     $(`.room-ui[data-room="${rooms[ri].id}"]`)?.classList.add('on');
     const list = roomScreens[ri];
@@ -291,7 +318,7 @@
       s.el.classList.add('on'); s.el.inert = !visible; s.el.tabIndex = visible ? 0 : -1;
       if (visible) startVideo(s.el, s.work);
     }
-    if (isMobile() && rooms[ri].category) fillRail(ri);
+    if (isMobile() && ri > 0 && rooms[ri].category) fillRail(ri);
   }
 
   /* ---------- scroll → state ---------- */
@@ -309,19 +336,29 @@
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     if (seg.type === 'rest') {
       const img = loadStill(seg.room);
-      if (img.complete && img.naturalWidth) drawFull(img);
+      // the camera creeps forward while you rest in a room, so scrolling always answers
+      const z = rooms[seg.room].next ? 1 + REST_ZOOM * t : 1;
+      const [fx, fy] = focal(seg.room);
+      if (img.complete && img.naturalWidth) drawFull(img, z, fx, fy);
+      zoomScreens(z, seg.room);
       activateRoom(seg.room);
       // preload: this room's outgoing transition, and the one that brought us here
       loadTransition(rooms[seg.room].next); loadStill(seg.room + 1 < rooms.length ? seg.room + 1 : seg.room);
     } else {
-      activateRoom(-1);
+      activateRoom(-1); zoomScreens(1, 0);
       loadTransition(seg.t);
       const next = rooms[seg.to].next; if (t > 0.5) loadTransition(next);
       const f = frames[seg.t];
       let k = Math.round(t * (f.length - 1)), img = null;
       for (let j = k; j >= 0; j--) if (f[j]._ok) { img = f[j]; break; }
-      if (img) drawFrame(img);
-      else { const s = loadStill(seg.from); if (s.complete) drawFull(s); }
+      const [fx, fy] = focal(seg.from);
+      // hand-off: the rest ended slightly zoomed; ease that back out while the real push-in takes over
+      if (img) drawFrame(img, 1 + REST_ZOOM * Math.max(0, 1 - t / 0.2), fx, fy);
+      else {
+        // frames still downloading: fake the push-in on the still so the scroll is never "dead"
+        const s = loadStill(seg.from);
+        if (s.complete) drawFull(s, 1 + REST_ZOOM + 2.2 * t * t, fx, fy);
+      }
     }
     updateLoader();
     force = false;
