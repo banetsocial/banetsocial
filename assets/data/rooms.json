@@ -1,0 +1,705 @@
+{
+  "imageSize": [
+    1376,
+    768
+  ],
+  "rooms": [
+    {
+      "id": "studio",
+      "category": "studio",
+      "title": "וידאו שנראה כמו קולנוע",
+      "still": "assets/media/rooms/studio",
+      "lqip": "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAACwBACdASoYAA4APu1kqk4ppaQiMAgBMB2JbAC7GvNwTP14AGImVvz5fwJJPyiAAP7pQy2Fc6vBJ3xfI9GE07PXBBVhkfYJQybQf0N/nfZVze7yJorSguRgNvJEgILlXvdsMvN2pbGSgnBJBt6Di9hXmPyu5+LWx+J3iT2E4gUjwVpLKflcA1oAAAA=",
+      "next": "t1",
+      "portal": [
+        [
+          44.48,
+          19.53
+        ],
+        [
+          55.52,
+          19.53
+        ],
+        [
+          55.52,
+          58.85
+        ],
+        [
+          44.48,
+          58.85
+        ]
+      ],
+      "portalWork": "showreel",
+      "screens": [
+        [
+          [
+            10.39,
+            34.9
+          ],
+          [
+            15.41,
+            36.46
+          ],
+          [
+            15.41,
+            61.46
+          ],
+          [
+            10.39,
+            63.8
+          ]
+        ],
+        [
+          [
+            17.66,
+            37.5
+          ],
+          [
+            21.08,
+            38.41
+          ],
+          [
+            21.08,
+            58.85
+          ],
+          [
+            17.66,
+            60.16
+          ]
+        ],
+        [
+          [
+            22.75,
+            39.06
+          ],
+          [
+            25.22,
+            39.71
+          ],
+          [
+            25.22,
+            57.29
+          ],
+          [
+            22.75,
+            58.2
+          ]
+        ],
+        [
+          [
+            26.53,
+            40.49
+          ],
+          [
+            28.49,
+            41.02
+          ],
+          [
+            28.49,
+            56.12
+          ],
+          [
+            26.53,
+            56.77
+          ]
+        ],
+        [
+          [
+            71.51,
+            41.02
+          ],
+          [
+            73.47,
+            40.49
+          ],
+          [
+            73.47,
+            56.77
+          ],
+          [
+            71.51,
+            56.12
+          ]
+        ],
+        [
+          [
+            74.78,
+            39.71
+          ],
+          [
+            77.25,
+            39.06
+          ],
+          [
+            77.25,
+            58.2
+          ],
+          [
+            74.78,
+            57.29
+          ]
+        ],
+        [
+          [
+            78.92,
+            38.41
+          ],
+          [
+            82.34,
+            37.5
+          ],
+          [
+            82.34,
+            60.16
+          ],
+          [
+            78.92,
+            58.85
+          ]
+        ],
+        [
+          [
+            84.59,
+            36.46
+          ],
+          [
+            89.61,
+            34.9
+          ],
+          [
+            89.61,
+            63.8
+          ],
+          [
+            84.59,
+            61.46
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "business",
+      "category": "business",
+      "title": "סרטונים שמביאים לקוחות",
+      "still": "assets/media/rooms/business",
+      "lqip": "data:image/webp;base64,UklGRqoAAABXRUJQVlA4IJ4AAACwBQCdASoYAA4APu1iqU2ppaQiMAgBMB2JbACdMoKDXmgHmAfrd7/926f1UCdo5kbG/QpWUUAA/sEHl9PrQNf2GYI+MxKoXidWKxIjjHFyjISPfYKk25cRnjo+y64PEzQjhq8JB+4D4b5vNQYq6W09lW1IgVrLvMThMyjKjajMlglTweZYHnU3DGaCiShvzuNOYulZ6ja0c53NuM9AAA==",
+      "next": "t2",
+      "portal": [
+        [
+          44.48,
+          19.53
+        ],
+        [
+          55.52,
+          19.53
+        ],
+        [
+          55.52,
+          58.85
+        ],
+        [
+          44.48,
+          58.85
+        ]
+      ],
+      "portalWork": "itamar-shalom",
+      "screens": [
+        [
+          [
+            10.54,
+            35.16
+          ],
+          [
+            15.33,
+            36.72
+          ],
+          [
+            15.33,
+            58.33
+          ],
+          [
+            10.54,
+            59.9
+          ]
+        ],
+        [
+          [
+            17.66,
+            37.76
+          ],
+          [
+            21.08,
+            38.54
+          ],
+          [
+            21.08,
+            57.55
+          ],
+          [
+            17.66,
+            58.59
+          ]
+        ],
+        [
+          [
+            22.75,
+            39.45
+          ],
+          [
+            25.22,
+            39.97
+          ],
+          [
+            25.22,
+            56.64
+          ],
+          [
+            22.75,
+            57.29
+          ]
+        ],
+        [
+          [
+            26.53,
+            40.76
+          ],
+          [
+            28.49,
+            41.15
+          ],
+          [
+            28.49,
+            55.73
+          ],
+          [
+            26.53,
+            56.25
+          ]
+        ],
+        [
+          [
+            71.51,
+            41.15
+          ],
+          [
+            73.47,
+            40.76
+          ],
+          [
+            73.47,
+            56.25
+          ],
+          [
+            71.51,
+            55.73
+          ]
+        ],
+        [
+          [
+            74.78,
+            39.97
+          ],
+          [
+            77.25,
+            39.45
+          ],
+          [
+            77.25,
+            57.29
+          ],
+          [
+            74.78,
+            56.64
+          ]
+        ],
+        [
+          [
+            78.92,
+            38.54
+          ],
+          [
+            82.34,
+            37.76
+          ],
+          [
+            82.34,
+            58.59
+          ],
+          [
+            78.92,
+            57.55
+          ]
+        ],
+        [
+          [
+            84.67,
+            36.72
+          ],
+          [
+            89.46,
+            35.16
+          ],
+          [
+            89.46,
+            59.9
+          ],
+          [
+            84.67,
+            58.33
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "events",
+      "category": "events",
+      "title": "הרגעים שלא חוזרים",
+      "still": "assets/media/rooms/events",
+      "lqip": "data:image/webp;base64,UklGRqwAAABXRUJQVlA4IKAAAACQBQCdASoYAA4APu1kqk4ppaQiMAgBMB2JbACdHYBtmfTzXcB/VQKZplbN3Ev+T4jxjnRmQAD+5dhdkSaKqLQUmy72zROPhdDLA6KyKbucbfw5InL289aXvBPoLZMZ1PfrIBOX4anw32+Ez4ty7TB+GljYZ3NIMLknJm1wYOHY7fdxMqdzv6RUqkbvv6RUqv2scrh5spfuRUqXQ+5FQAAA",
+      "next": "t3",
+      "portal": [
+        [
+          44.48,
+          19.53
+        ],
+        [
+          55.52,
+          19.53
+        ],
+        [
+          55.52,
+          48.44
+        ],
+        [
+          44.48,
+          48.44
+        ]
+      ],
+      "portalWork": "orchestra",
+      "screens": [
+        [
+          [
+            10.03,
+            34.9
+          ],
+          [
+            15.41,
+            36.72
+          ],
+          [
+            15.41,
+            59.64
+          ],
+          [
+            10.03,
+            61.46
+          ]
+        ],
+        [
+          [
+            17.15,
+            37.76
+          ],
+          [
+            21.15,
+            38.67
+          ],
+          [
+            21.15,
+            58.07
+          ],
+          [
+            17.15,
+            59.11
+          ]
+        ],
+        [
+          [
+            22.46,
+            39.45
+          ],
+          [
+            25.29,
+            39.97
+          ],
+          [
+            25.29,
+            56.77
+          ],
+          [
+            22.46,
+            57.42
+          ]
+        ],
+        [
+          [
+            26.24,
+            40.63
+          ],
+          [
+            28.56,
+            41.15
+          ],
+          [
+            28.56,
+            55.73
+          ],
+          [
+            26.24,
+            56.25
+          ]
+        ],
+        [
+          [
+            71.44,
+            41.15
+          ],
+          [
+            73.76,
+            40.63
+          ],
+          [
+            73.76,
+            56.25
+          ],
+          [
+            71.44,
+            55.73
+          ]
+        ],
+        [
+          [
+            74.71,
+            39.97
+          ],
+          [
+            77.54,
+            39.45
+          ],
+          [
+            77.54,
+            57.42
+          ],
+          [
+            74.71,
+            56.77
+          ]
+        ],
+        [
+          [
+            78.85,
+            38.67
+          ],
+          [
+            82.85,
+            37.76
+          ],
+          [
+            82.85,
+            59.11
+          ],
+          [
+            78.85,
+            58.07
+          ]
+        ],
+        [
+          [
+            84.59,
+            36.72
+          ],
+          [
+            89.97,
+            34.9
+          ],
+          [
+            89.97,
+            61.46
+          ],
+          [
+            84.59,
+            59.64
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "ai",
+      "category": "ai",
+      "title": "מה שאי אפשר לצלם, אפשר לייצר",
+      "still": "assets/media/rooms/ai",
+      "lqip": "data:image/webp;base64,UklGRq4AAABXRUJQVlA4IKIAAACwBQCdASoYAA4APu1iqk2ppaQiMAgBMB2JbACdMoR3GKAeZX69F26f1UCmat0SWjhBbpObC3gA/sI9Qos6VOUF3NDJ6EUh/927Cn8sbU0BFnQjDgM9AXHUUATfFY+V4P2WpmtubC2yz6uQrBPys/tTlnkXgBteBfaV3ABMshGx7HcXCT1WIuXMkRGNndIpHK7TSKU4M5KrU/sikcle5FIAAAA=",
+      "next": "t4",
+      "portal": [
+        [
+          45.64,
+          36.85
+        ],
+        [
+          54.22,
+          36.85
+        ],
+        [
+          54.22,
+          63.41
+        ],
+        [
+          45.64,
+          63.41
+        ]
+      ],
+      "portalWork": "ai-slichti",
+      "screens": [
+        [
+          [
+            10.32,
+            35.16
+          ],
+          [
+            16.57,
+            36.85
+          ],
+          [
+            16.57,
+            62.5
+          ],
+          [
+            10.32,
+            64.19
+          ]
+        ],
+        [
+          [
+            21.15,
+            38.02
+          ],
+          [
+            27.33,
+            38.8
+          ],
+          [
+            27.33,
+            60.94
+          ],
+          [
+            21.15,
+            61.72
+          ]
+        ],
+        [
+          [
+            31.69,
+            39.71
+          ],
+          [
+            37.72,
+            40.23
+          ],
+          [
+            37.72,
+            59.9
+          ],
+          [
+            31.69,
+            60.16
+          ]
+        ],
+        [
+          [
+            62.28,
+            40.23
+          ],
+          [
+            68.31,
+            39.71
+          ],
+          [
+            68.31,
+            60.16
+          ],
+          [
+            62.28,
+            59.9
+          ]
+        ],
+        [
+          [
+            72.67,
+            38.8
+          ],
+          [
+            78.85,
+            38.02
+          ],
+          [
+            78.85,
+            61.72
+          ],
+          [
+            72.67,
+            60.94
+          ]
+        ],
+        [
+          [
+            83.43,
+            36.85
+          ],
+          [
+            89.68,
+            35.16
+          ],
+          [
+            89.68,
+            64.19
+          ],
+          [
+            83.43,
+            62.5
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "office",
+      "category": null,
+      "title": "בואו נדבר",
+      "still": "assets/media/rooms/office",
+      "lqip": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAACQBACdASoYAA4APu1kqk4ppaQiMAgBMB2JbACdGu5wQD1/wHjb8Cwho2fxYFwA/sBjDbS8Y456m6rH5IPhLug3fV/ZLyOhdJFMZ+PEGOWFKJ3ZlR46TKuVKRxyjDyd0nQz9a6c7oiHsFICe/zoD7pJVR+YOHaSVF4JEAWRcOZq9UsqNgAAAA==",
+      "next": null,
+      "portal": null,
+      "portalWork": null,
+      "screens": []
+    }
+  ],
+  "transitions": [
+    {
+      "id": "t1",
+      "frames": 76,
+      "desktop": "assets/media/sequences/t1/d/",
+      "mobile": "assets/media/sequences/t1/m/",
+      "mobileCrop": 0.75
+    },
+    {
+      "id": "t2",
+      "frames": 76,
+      "desktop": "assets/media/sequences/t2/d/",
+      "mobile": "assets/media/sequences/t2/m/",
+      "mobileCrop": 0.75
+    },
+    {
+      "id": "t3",
+      "frames": 76,
+      "desktop": "assets/media/sequences/t3/d/",
+      "mobile": "assets/media/sequences/t3/m/",
+      "mobileCrop": 0.75
+    },
+    {
+      "id": "t4",
+      "frames": 76,
+      "desktop": "assets/media/sequences/t4/d/",
+      "mobile": "assets/media/sequences/t4/m/",
+      "mobileCrop": 0.75
+    }
+  ]
+}

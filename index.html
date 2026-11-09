@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>בנט סושיאל | וידאו לעסקים, אירועים והפקות AI</title>
+<meta name="description" content="יוסי בנט, עורך וידאו ויוצר תוכן AI מביתר עילית וירושלים. רילס לעסקים, תיעוד אירועים והפקות AI קולנועיות. מחירון מלא ושליחת הודעה בוואטסאפ.">
+<link rel="canonical" href="https://banetsocial.github.io/">
+<meta name="theme-color" content="#061A22">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:title" content="בנט סושיאל | וידאו שנראה כמו קולנוע">
+<meta property="og:description" content="רילס לעסקים, תיעוד אירועים והפקות AI. ביתר עילית וירושלים.">
+<meta property="og:image" content="assets/media/brand/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/media/brand/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/media/rooms/studio-1280.webp" media="(min-width: 768px)">
+<link rel="preload" as="image" href="assets/media/rooms/studio-720.webp" media="(max-width: 767px)">
+<link rel="stylesheet" href="assets/css/site.css">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<a class="skip" href="#office">דלגו ישר למחירון וליצירת קשר</a>
+
+<main>
+  <!-- ===== The journey: one sticky stage, scrolled through five rooms ===== -->
+  <section id="journey" class="journey" aria-label="סיור בעבודות">
+    <div class="stage" id="stage">
+      <canvas id="canvas" aria-hidden="true"></canvas>
+      <div class="screens" id="screens"></div>
+
+      <div class="room-ui" data-room="studio">
+        <h1 class="headline" data-reveal>וידאו שנראה כמו קולנוע.</h1>
+        <p class="lead">רילס לעסקים, תיעוד אירועים והפקות AI. מביתר עילית ומירושלים.</p>
+        <p class="proof">עשרות לקוחות. יותר משנתיים של וידאו לסושיאל.</p>
+        <p class="cue" aria-hidden="true">גללו פנימה</p>
+      </div>
+      <img class="brand" src="assets/media/brand/logo-mark-240.png" alt="בנט סושיאל" width="237" height="240">
+      <div class="room-ui" data-room="business">
+        <h2 class="headline" data-reveal>סרטונים שמביאים לקוחות</h2>
+        <p class="lead">רילס לעסקים, נדל״ן ובתי קפה. מצולמים אצלכם, ערוכים עד הפריים האחרון.</p>
+        <button class="all-btn" type="button" data-gallery="business">כל העבודות בקטגוריה</button>
+      </div>
+      <div class="room-ui" data-room="events">
+        <h2 class="headline" data-reveal>הרגעים שלא חוזרים</h2>
+        <p class="lead">אירועים, תזמורות, פסטיבלים ומוזיקה חיה.</p>
+        <button class="all-btn" type="button" data-gallery="events">כל העבודות בקטגוריה</button>
+      </div>
+      <div class="room-ui" data-room="ai">
+        <h2 class="headline" data-reveal>מה שאי אפשר לצלם, אפשר לייצר</h2>
+        <p class="lead">הפקות AI קולנועיות, מהתסריט ועד הסאונד.</p>
+        <button class="all-btn" type="button" data-gallery="ai">כל העבודות בקטגוריה</button>
+      </div>
+
+      <div class="rail" id="rail" aria-label="עבודות בחדר הזה"></div>
+      <div class="loader" id="loader" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- ===== The office: everything a client needs to decide ===== -->
+  <section id="office" class="office" aria-labelledby="office-title">
+    <div class="office-bg" aria-hidden="true"></div>
+    <div class="office-inner">
+      <h2 id="office-title" class="headline">בואו נדבר</h2>
+      <p class="lead">הגעתם למשרד. כאן כל מה שצריך כדי להתחיל.</p>
+
+      <section class="block" aria-labelledby="process-title">
+        <h3 id="process-title">איך זה עובד</h3>
+        <ol class="process">
+          <li><span>1</span>שיחת היכרות</li>
+          <li><span>2</span>תסריט וקונספט</li>
+          <li><span>3</span>צילום או הפקה</li>
+          <li><span>4</span>עריכה</li>
+          <li><span>5</span>מסירה</li>
+        </ol>
+      </section>
+
+      <section class="block" aria-labelledby="prices-title">
+        <h3 id="prices-title">מחירון</h3>
+        <div class="prices">
+          <article class="price">
+            <h4>רילס לעסק בצילום שטח</h4>
+            <p class="amount"><bdi dir="ltr">1,300 ₪</bdi></p>
+            <p>עד שעת צילום בעסק בביתר עילית או בירושלים, עריכה מלאה, מוזיקה, כתוביות ועיצוב דינמי.</p>
+          </article>
+          <article class="price">
+            <h4>סרטון שיווקי ב־AI</h4>
+            <p class="amount"><bdi dir="ltr">1,000 ₪</bdi></p>
+            <p>תסריט, ויזואל AI, קריינות AI, סאונד, עריכה קצבית וקריאה לפעולה.</p>
+          </article>
+          <article class="price">
+            <h4>הפקת AI קולנועית מורכבת</h4>
+            <p class="amount">החל מ־<bdi dir="ltr">3,500 ₪</bdi></p>
+            <p>לפי אורך ומורכבות. קונספט, תסריט מלא, שוטים מורכבים, עיצוב סאונד מלא, דיבוב או מוזיקה מקורית ועריכה קולנועית.</p>
+          </article>
+          <article class="price price--featured">
+            <h4>ריטיינר חודשי</h4>
+            <p class="amount"><bdi dir="ltr">4,200 ₪</bdi> לחודש <s>במקום <bdi dir="ltr">5,200 ₪</bdi></s></p>
+            <p>4 סרטונים מלאים בחודש, תכנון חודשי, ליווי קריאייטיבי ועריכה.</p>
+          </article>
+        </div>
+        <ul class="terms">
+          <li>עד 2 סבבי תיקונים כלולים. סבב נוסף <bdi dir="ltr">150–200 ₪</bdi>.</li>
+          <li>מסירה עד 5 ימי עסקים מקבלת כל החומרים או מיום הצילום.</li>
+          <li>ביתר עילית וירושלים בלי תוספת. מחוץ לאזור <bdi dir="ltr">150–250 ₪</bdi> לפי מרחק.</li>
+          <li>תשלום: 50% מקדמה בהזמנה, 50% בסיום ולפני מסירת הקובץ הסופי.</li>
+        </ul>
+      </section>
+
+      <section class="block about" aria-labelledby="about-title">
+        <h3 id="about-title">עליי</h3>
+        <blockquote>״אני אוהב להפוך רעיונות לוויזואל שעובד.״</blockquote>
+        <p>אני יוסי בנט, עורך וידאו ויוצר תוכן AI מביתר עילית. אני לוקח רעיון אחד חזק ונותן לו את הבמה, בלי רעש מסביב. רילס לעסקים, אירועים, קליפים והפקות AI קולנועיות.</p>
+        <p class="gear">בציוד: <bdi dir="ltr">DJI Osmo Pocket 3</bdi>, <bdi dir="ltr">DJI Mic 2</bdi>.</p>
+      </section>
+
+      <section class="block cta" aria-labelledby="cta-title">
+        <h3 id="cta-title">יש לכם רעיון? בואו נהפוך אותו לסרטון.</h3>
+        <a class="btn-primary" href="https://wa.me/972524558719?text=%D7%94%D7%99%D7%99%20%D7%99%D7%95%D7%A1%D7%99%2C%20%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%9E%D7%94%D7%90%D7%AA%D7%A8" target="_blank" rel="noopener">שלחו לי הודעה בוואטסאפ</a>
+        <p class="call">או התקשרו: <a href="tel:+972524558719"><bdi dir="ltr">052-4558719</bdi></a></p>
+      </section>
+
+      <!--WORKS:START-->
+      <noscript>
+      <section class="block nojs-works" aria-labelledby="nojs-title">
+        <h3 id="nojs-title">כל העבודות</h3>
+        <h4>צילומי אווירה ומאחורי הקלעים</h4>
+        <ul>
+          <li><a href="assets/media/works/studio-mix/full.mp4">אולפן הפקה ומיקס</a> · BANET Studio</li>
+          <li><a href="assets/media/works/single-a-base/full.mp4">הקלטת סינגל</a> · א בייס</li>
+          <li><a href="assets/media/works/jerusalem/full.mp4">דמויות בירושלים</a> · צילומי שטח</li>
+          <li><a href="assets/media/works/nature/full.mp4">נופי טבע וגלים</a> · דיין וועלט</li>
+          <li><a href="assets/media/works/newborn/full.mp4">צילומי ניו בורן</a> · ניו בורן</li>
+          <li><a href="assets/media/works/showreel/full.mp4">אטמוספרה</a> · בושם לרכב</li>
+        </ul>
+        <h4>וידאו לעסקים</h4>
+        <ul>
+          <li><a href="assets/media/works/itamar-shalom/full.mp4">הכפלה עסקית</a> · איתמר שולם · סרטוני מכירה שהביאו לו חשיפה מול לקוחות חדשים</li>
+          <li><a href="assets/media/works/karlin-renovation/full.mp4">שיפוץ מבנה היסטורי</a> · אתר בנייה קרלין · סרטוני אווירה שעזרו לגייס תרומות לבניין</li>
+          <li><a href="assets/media/works/coffee/full.mp4">COFFEE</a> · הפקת וידאו לבית קפה</li>
+          <li><a href="assets/media/works/bichler/full.mp4">ביכלר נדל״ן</a> · סרטון לעסק</li>
+          <li><a href="assets/media/works/darshu/full.mp4">מפעל ודפוס</a> · דרשו</li>
+          <li><a href="assets/media/works/mapana/full.mp4">מאפנה</a> · צילומי אווירה</li>
+          <li><a href="assets/media/works/karlin-donors-2/full.mp4">כל התומכים</a> · אתר בנייה קרלין</li>
+          <li><a href="assets/media/works/karlin-frame/full.mp4">שלד וריצוף</a> · אתר בנייה קרלין</li>
+          <li><a href="assets/media/works/karlin-donors-1/full.mp4">כל התומכים</a> · אתר בנייה קרלין</li>
+          <li><a href="assets/media/works/warehouse/full.mp4">עבודת כפיים ומחסן</a> · תיעוד</li>
+        </ul>
+        <h4>אירועים ומוזיקה</h4>
+        <ul>
+          <li><a href="assets/media/works/orchestra/full.mp4">תזמורת</a> · אולם גולד</li>
+          <li><a href="assets/media/works/sukkot/full.mp4">סוכות</a> · הפקת אירוע</li>
+          <li><a href="assets/media/works/dinner/full.mp4">דינר יוקרתי</a> · לערנען</li>
+          <li><a href="assets/media/works/chassidic-event/full.mp4">שמחה עם תזמורת</a> · תיעוד אירוע</li>
+          <li><a href="assets/media/works/live-keys/full.mp4">קלידים חיים</a> · הפקת אירוע</li>
+          <li><a href="assets/media/works/conference/full.mp4">כנס עסקי</a> · הכפלה עסקית</li>
+          <li><a href="assets/media/works/sukkot-festival/full.mp4">פסטיבל סוכות</a> · הפקת שטח</li>
+          <li><a href="assets/media/works/clip-bts/full.mp4">מאחורי הקלעים</a> · צילום קליפ</li>
+        </ul>
+        <h4>הפקות AI</h4>
+        <ul>
+          <li><a href="assets/media/works/ai-5549/full.mp4">מלכות שבמלכות</a> · סדרת AI</li>
+          <li><a href="assets/media/works/ai-slichti/full.mp4">סלחתי</a> · מלכות שבמלכות</li>
+          <li><a href="assets/media/works/ai-hayom/full.mp4">היום תקבל את תפילתנו</a> · מלכות שבמלכות</li>
+          <li><a href="assets/media/works/ai-nishpoch/full.mp4">נשפוך כמים</a> · מלכות שבמלכות</li>
+          <li><a href="assets/media/works/ai-kodem/full.mp4">קודם שיחטא האדם</a> · מלכות שבמלכות</li>
+          <li><a href="assets/media/works/ai-beyom/full.mp4">ביום קראנו</a> · מלכות שבמלכות</li>
+          <li><a href="assets/media/works/ai-koenig/full.mp4">דער קעניג</a> · מלכות שבמלכות</li>
+          <li><a href="assets/media/works/ai-sukkah/full.mp4">לישב בסוכת עורו</a> · מלכות שבמלכות</li>
+          <li><a href="assets/media/works/ai-zocher/full.mp4">אתה זוכר</a> · מלכות שבמלכות</li>
+          <li><a href="assets/media/works/ai-5211/full.mp4">מלכות שבמלכות</a> · סדרת AI</li>
+        </ul>
+      </section>
+      </noscript>
+      <!--WORKS:END-->
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <img src="assets/media/brand/logo-mark-240.png" alt="" width="79" height="80" loading="lazy">
+  <p>בנט סושיאל · ביתר עילית וירושלים · <a href="mailto:yosibanet@gmail.com"><bdi dir="ltr">yosibanet@gmail.com</bdi></a></p>
+</footer>
+
+<a class="wa-float" href="https://wa.me/972524558719?text=%D7%94%D7%99%D7%99%20%D7%99%D7%95%D7%A1%D7%99%2C%20%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%9E%D7%94%D7%90%D7%AA%D7%A8" target="_blank" rel="noopener" aria-label="שלחו לי הודעה בוואטסאפ">
+  <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1 1-3.8-.2-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1-1.9-1-3.2-1.7-4.4-3.8-.3-.6.3-.5 1-1.8.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.3 1.4 3.5c.2.2 2.4 3.6 5.8 5.1 2.2.9 3 1 4.1.8.7-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg>
+  <span>וואטסאפ</span>
+</a>
+
+<!-- Full-screen player -->
+<dialog class="player" id="player" aria-label="נגן וידאו">
+  <button class="close" type="button" data-close aria-label="סגירה">×</button>
+  <video id="player-video" controls playsinline preload="none"></video>
+  <p class="player-caption" id="player-caption"></p>
+</dialog>
+
+<!-- Category gallery -->
+<dialog class="gallery" id="gallery" aria-labelledby="gallery-title">
+  <div class="gallery-head">
+    <h2 id="gallery-title"></h2>
+    <button class="close" type="button" data-close aria-label="סגירה">×</button>
+  </div>
+  <div class="gallery-grid" id="gallery-grid"></div>
+</dialog>
+
+<script src="assets/data/site-data.js"></script>
+<script src="assets/js/journey.js"></script>
+</body>
+</html>
