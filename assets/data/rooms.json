@@ -9,7 +9,7 @@
       "category": "studio",
       "title": "וידאו שנראה כמו קולנוע",
       "still": "assets/media/rooms/studio",
-      "lqip": "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAACwBACdASoYAA4APu1kqk4ppaQiMAgBMB2JbAC7GvNwTP14AGImVvz5fwJJPyiAAP7pQy2Fc6vBJ3xfI9GE07PXBBVhkfYJQybQf0N/nfZVze7yJorSguRgNvJEgILlXvdsMvN2pbGSgnBJBt6Di9hXmPyu5+LWx+J3iT2E4gUjwVpLKflcA1oAAAA=",
+      "lqip": "data:image/webp;base64,UklGRrgAAABXRUJQVlA4IKwAAABQBACdASoYAA4APtFWo0uoJKMhsAgBABoJZACdH8EwVgREQ2e1KhPU+VYAAP7u3n1+n4uYTTQlXD2C2QvbafQZaoQ2aaeFqI6krpDM2V0BypmarUTkXZ64eIx/GF9+WJk+03rEYp2xsTY8pknjQPt/lvluPAeKsG8JL+B6hGihPc0VddCisHpNXj+3dIysw3niarNHL0VQRF3D95a3CzOlWOYSuZyvcrzXMDAA",
       "next": "t1",
       "portal": [
         [
@@ -182,7 +182,7 @@
       "category": "business",
       "title": "סרטונים שמביאים לקוחות",
       "still": "assets/media/rooms/business",
-      "lqip": "data:image/webp;base64,UklGRqoAAABXRUJQVlA4IJ4AAACwBQCdASoYAA4APu1iqU2ppaQiMAgBMB2JbACdMoKDXmgHmAfrd7/926f1UCdo5kbG/QpWUUAA/sEHl9PrQNf2GYI+MxKoXidWKxIjjHFyjISPfYKk25cRnjo+y64PEzQjhq8JB+4D4b5vNQYq6W09lW1IgVrLvMThMyjKjajMlglTweZYHnU3DGaCiShvzuNOYulZ6ja0c53NuM9AAA==",
+      "lqip": "data:image/webp;base64,UklGRrQAAABXRUJQVlA4IKgAAACQBACdASoYAA4APtFUo0uoJKMhsAgBABoJZACdMoMYAEPpmHdyL+hpQCGnsQAA/tI2QQTL66HbCq8w6JAp4IiZ6WwBhlm2dB0Yvsgaprs7RvJ3wd9dlngrnYrQpMsG/E+S92xVpvxrEhQR8px4S/UBWZGzkl1YKwuoo6eogmkOp35gX/JGSrToKkJouZnwrmNpLfIDNUEK7qhHnb5MYmbOAta4k0wAAAA=",
       "next": "t2",
       "portal": [
         [
@@ -355,7 +355,7 @@
       "category": "events",
       "title": "הרגעים שלא חוזרים",
       "still": "assets/media/rooms/events",
-      "lqip": "data:image/webp;base64,UklGRqwAAABXRUJQVlA4IKAAAACQBQCdASoYAA4APu1kqk4ppaQiMAgBMB2JbACdHYBtmfTzXcB/VQKZplbN3Ev+T4jxjnRmQAD+5dhdkSaKqLQUmy72zROPhdDLA6KyKbucbfw5InL289aXvBPoLZMZ1PfrIBOX4anw32+Ez4ty7TB+GljYZ3NIMLknJm1wYOHY7fdxMqdzv6RUqkbvv6RUqv2scrh5spfuRUqXQ+5FQAAA",
+      "lqip": "data:image/webp;base64,UklGRr4AAABXRUJQVlA4ILIAAACwBACdASoYAA4APtFUo0uoJKMhsAgBABoJbACdMoMYA0f9q6G4UvLS3cwBYglAAP7p7ytSQDnvyJzuwrilWoGKB1pI+kfw9+FMbGq8Shy3Mp+2oj5X5XRSFQzGzBrGxLXTHUnSgjEYeLdLJMLeH5gW1qnflxT6IX6jSJOqgtD8+KMgydKtCHbc5dx4BpFJoaOh7Y8PZeHfIToxuFo51brLYiFQJZgHxX4S+0yLj4JKQAAA",
       "next": "t3",
       "portal": [
         [
@@ -528,7 +528,7 @@
       "category": "ai",
       "title": "מה שאי אפשר לצלם, אפשר לייצר",
       "still": "assets/media/rooms/ai",
-      "lqip": "data:image/webp;base64,UklGRq4AAABXRUJQVlA4IKIAAACwBQCdASoYAA4APu1iqk2ppaQiMAgBMB2JbACdMoR3GKAeZX69F26f1UCmat0SWjhBbpObC3gA/sI9Qos6VOUF3NDJ6EUh/927Cn8sbU0BFnQjDgM9AXHUUATfFY+V4P2WpmtubC2yz6uQrBPys/tTlnkXgBteBfaV3ABMshGx7HcXCT1WIuXMkRGNndIpHK7TSKU4M5KrU/sikcle5FIAAAA=",
+      "lqip": "data:image/webp;base64,UklGRsQAAABXRUJQVlA4ILgAAAAQBQCdASoYAA4APtFUo0uoJKMhsAgBABoJYgCdMoMpD6AN0Ab+ckdAnfS7Ohk+Ex1kAP7CnJmTEp4Wj5fQ1Ak+tUwnHkc0w+LULBGw0+n1IfW7NmyKsWNMXpWC/OxvEEzsCmUr1bqFyBz+FJZBBzikBdpbEl+VkyUVTvsOz495LuEv2zzaD3bz8l1nAVmoTeTXALuDeeJQjHVoKTs4D9oidwgar9cldcKU/7tIJ38HhkSE3+DrgAAA",
       "next": "t4",
       "portal": [
         [
@@ -665,13 +665,33 @@
       "category": null,
       "title": "בואו נדבר",
       "still": "assets/media/rooms/office",
-      "lqip": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAACQBACdASoYAA4APu1kqk4ppaQiMAgBMB2JbACdGu5wQD1/wHjb8Cwho2fxYFwA/sBjDbS8Y456m6rH5IPhLug3fV/ZLyOhdJFMZ+PEGOWFKJ3ZlR46TKuVKRxyjDyd0nQz9a6c7oiHsFICe/zoD7pJVR+YOHaSVF4JEAWRcOZq9UsqNgAAAA==",
+      "lqip": "data:image/webp;base64,UklGRrAAAABXRUJQVlA4IKQAAACQBACdASoYAA4APtFUo0uoJKMhsAgBABoJQBOkCYwXgm95Zx/QxBh28/9HSBoA/tDo2bPU5GefXP1OxOgHum1tE4QF710LFMfFncyxFyFtu4wiuv5W7Ubl6SaKGCzIlQYl5LJdozNPL9P51F9XhZJtqIoKVY0SXD19962lkTXvMh5pQUko23hUCylIR69hHirwBRQsUXNk9zJQ2bgx0673sAAAAA==",
       "next": null,
       "portal": null,
       "portalWork": null,
-      "screens": []
+      "screens": [],
+      "door": [
+        50,
+        40.4,
+        2.6
+      ]
     }
   ],
+  "scenes": {
+    "exterior": {
+      "still": "assets/media/rooms/exterior",
+      "lqip": "data:image/webp;base64,UklGRswAAABXRUJQVlA4IMAAAACwBACdASoYAA4APtFUo0uoJKMhsAgBABoJagCdMoMYAEvQCkKeM0hrQX6hu9LAAPzTpOf+5hPEK74wEfqV5PbpMbfYfAHh0SkW/EEg23eVJ3lN64FX24aiWxmvoN5SVQNyhWxa+kO03GaSafqwnJ4V4hHbsdl+ObpkqI5wkFWaBah196KpE2JT+b77vqsOmrtgEgoJsIJvhBokTq2PDnLZQ1ccPfKYm75/1YYfLVQ7J8NEIL7fiU5dgAAKDzQAAAA=",
+      "door": [
+        50,
+        56.3,
+        2.9
+      ]
+    },
+    "beach": {
+      "still": "assets/media/rooms/beach",
+      "lqip": "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAACwBACdASoYAA4APtFUo0uoJKMhsAgBABoJagCdMoRwACWivgLH9PT0vncsUo6AAP32niu4Wi8ym7bu9fVkCiMRwSuE0uDLKuZ6f/7zWjpoNSPP6jvSVdoCGgrwyPkLoKr+ZMqUsHQoSSjkxV4icPbBFuDcPXes2Sct99/ZABHpdA8IM7tJlK2AAAA="
+    }
+  },
   "transitions": [
     {
       "id": "t1",

@@ -69,8 +69,15 @@ const rooms = [
     id: 'office', category: null, title: 'בואו נדבר',
     still: 'assets/media/rooms/office', lqip: '', next: null,
     portal: null, portalWork: null, screens: [],
+    door: [50, 40.4, 2.6],          // the open glass door to the beach: centre x%, y%, zoom that fills the view
   },
 ];
+
+// outside the rooms: the building we walk into, and the beach we walk out onto
+const scenes = {
+  exterior: { still: 'assets/media/rooms/exterior', lqip: '', door: [50, 56.3, 2.9] },
+  beach: { still: 'assets/media/rooms/beach', lqip: '' },
+};
 
 const transitions = ['t1', 't2', 't3', 't4'].map(id => {
   const dir = path.join(__dirname, '..', 'assets/media/sequences', id, 'd');
@@ -78,10 +85,10 @@ const transitions = ['t1', 't2', 't3', 't4'].map(id => {
   return { id, frames, desktop: `assets/media/sequences/${id}/d/`, mobile: `assets/media/sequences/${id}/m/`, mobileCrop: 0.75 };
 });
 
-for (const r of rooms) {
+for (const r of [...rooms, ...Object.values(scenes)]) {
   const f = path.join(__dirname, '..', r.still + '-lqip.txt');
   if (fs.existsSync(f)) r.lqip = fs.readFileSync(f, 'utf8').trim();
 }
 fs.writeFileSync(path.join(__dirname, '..', 'assets/data/rooms.json'),
-  JSON.stringify({ imageSize: [W, H], rooms, transitions }, null, 2) + '\n');
+  JSON.stringify({ imageSize: [W, H], rooms, scenes, transitions }, null, 2) + '\n');
 console.log('rooms.json:', rooms.map(r => `${r.id}(${r.screens.length})`).join(' '), transitions.map(t => `${t.id}:${t.frames}`).join(' '));

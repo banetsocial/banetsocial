@@ -64,7 +64,6 @@ button { font: inherit; color: inherit; }
 
 /* ---------- Journey ---------- */
 .journey { position: relative; }
-.js .journey { block-size: var(--journey-h, 1000vh); }
 .stage {
   position: sticky; inset-block-start: 0;
   block-size: 100vh; block-size: 100svh;
@@ -174,12 +173,53 @@ button { font: inherit; color: inherit; }
   transform-origin: right; transform: scaleX(var(--load, 0)); transition: transform .2s; opacity: .8; }
 
 /* ---------- Office ---------- */
-.office { position: relative; isolation: isolate; padding: clamp(64px, 10vh, 120px) var(--gutter) 96px; }
+/* ---------- The beach (prices, process, about, contact) ---------- */
+/* Journey mode: this section sits inside #journey right after the pinned stage. Its top margin is the
+   whole walk, so it rises over the stage only once we have stepped out onto the beach; the stage
+   (still pinned) is the beach behind it. */
+.office { position: relative; z-index: 5; isolation: isolate; padding: clamp(64px, 10vh, 120px) var(--gutter) 30vh; }
+.js:not(.static) .office { margin-block-start: var(--journey-gap, 0px); }
+.js:not(.static) .office-bg { display: none; }
 .office-bg { position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(180deg, rgba(6, 26, 34, .55), rgba(6, 26, 34, .92) 40%, var(--bg)),
-              url("../media/rooms/office-1280.webp") center top / cover no-repeat; }
-.office-inner { max-inline-size: 1100px; margin-inline: auto; }
+  background: linear-gradient(180deg, rgba(6, 26, 34, .35), rgba(6, 26, 34, .82) 45%, var(--bg)),
+              url("../media/rooms/beach-1280.webp") center top / cover no-repeat; }
+.office-inner { max-inline-size: 1100px; margin-inline: auto; perspective: 1200px; perspective-origin: 50% 40%; }
 .block { margin-block-start: clamp(40px, 7vh, 72px); }
+
+/* glass panels standing on the sand: they come up from the beach tilted back, face you in the
+   middle of the screen, and lean away as they pass over (JS sets --q from -1 above to 1 below) */
+.js:not(.static) .office .block {
+  position: relative;
+  padding: clamp(20px, 3.2vw, 36px);
+  background: linear-gradient(160deg, rgba(10, 44, 56, .72), rgba(5, 22, 29, .78));
+  border: 1px solid rgba(127, 245, 236, .28);
+  border-radius: 18px;
+  box-shadow: 0 40px 70px -30px rgba(0, 0, 0, .65), 0 0 40px rgba(46, 196, 214, .12), inset 0 1px 0 rgba(255, 255, 255, .12);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2); backdrop-filter: blur(10px) saturate(1.2);
+  transform-origin: 50% 100%;
+  transform: translateZ(calc(var(--qa, 0) * -320px)) rotateX(calc(var(--q, 0) * 28deg)) translateY(calc(var(--q, 0) * 40px));
+  opacity: calc(1 - var(--qa, 0) * .7);
+  will-change: transform, opacity;
+}
+/* warm sunset rim along the top edge, like the light catching the glass */
+.js:not(.static) .office .block::before {
+  content: ""; position: absolute; inset-block-start: -1px; inset-inline: 12%; block-size: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--warm), transparent); opacity: .85;
+}
+/* a soft shadow on the sand under each panel */
+.js:not(.static) .office .block::after {
+  content: ""; position: absolute; inset-inline: 8%; inset-block-end: -26px; block-size: 26px; z-index: -1;
+  background: radial-gradient(50% 50% at 50% 0, rgba(0, 0, 0, .45), transparent 70%);
+}
+.js:not(.static) .office .office-head { text-align: center; margin-block-start: 0; }
+.js:not(.static) .office .office-head .lead { margin-inline: auto; }
+@media (max-width: 767px) {
+  /* phones: no live blur behind six big panels, a little more opaque glass instead */
+  .js:not(.static) .office .block { -webkit-backdrop-filter: none; backdrop-filter: none; background: linear-gradient(160deg, rgba(10, 44, 56, .86), rgba(5, 22, 29, .9)); }
+}
+
+/* the walk-in cue only makes sense while standing outside */
+.stage:not(.outside) .room-ui .cue { opacity: 0; }
 .block h3 { font-family: var(--font-display); font-size: var(--step-2); margin: 0 0 .6em; color: #fff; text-wrap: balance; }
 
 .process { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); counter-reset: s; }

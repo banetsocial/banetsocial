@@ -142,13 +142,17 @@
 
   /* =====================================================================
      JOURNEY MODE
+     Outside the building → walk in through the front door → the rooms → out through the
+     office door onto the beach, where the prices and the rest stand as panels on the sand.
      The rooms sit side by side in one wide "panorama". Scrolling turns the camera to the right,
      leaning in a little mid-turn like a step forward, and settles in the next room.
      Neighbouring rooms blend into each other over their shared edge.
      ===================================================================== */
   const journey = $('#journey'), stage = $('#stage'), canvas = $('#canvas'), ctx = canvas.getContext('2d');
   const screensLayer = $('#screens'), rail = $('#rail'), loader = $('#loader');
-  stage.style.setProperty('--lqip', `url('${rooms[0].lqip}')`);
+  const SC = SITE.scenes || {};
+  stage.style.setProperty('--lqip', `url('${(SC.exterior || rooms[0]).lqip}')`);
+  const office = $('#office'), panels = office ? $('.block', office) : [];
   if (loader) loader.hidden = true;
 
   // timeline in "screens" (1 = one viewport of scroll). Phones get shorter stretches so every swipe moves something.
@@ -162,13 +166,19 @@
   const BOB = 4;                           // footstep sway (virtual px)
   const BLUR = M ? 0 : 3.5;                // motion blur at full turning speed (desktop only: cheap there)
   const canBlur = BLUR > 0 && 'filter' in ctx;
+  const INTRO = M ? 0.45 : 0.6, DOOR = M ? 1.1 : 1.3;   // standing outside; walking through a door
   const segs = []; let total = 0;
+  if (SC.exterior) {
+    segs.push({ type: 'intro', start: 0, len: INTRO }); total += INTRO;
+    segs.push({ type: 'enter', start: total, len: DOOR }); total += DOOR;
+  }
   rooms.forEach((room, i) => {
     const len = REST[room.id] || REST_DEFAULT;
     segs.push({ type: 'rest', room: i, start: total, len }); total += len;
     if (room.next) { segs.push({ type: 'trans', from: i, to: i + 1, start: total, len: TRANS }); total += TRANS; }
   });
-  journey.style.setProperty('--journey-h', `${(total + 1) * 100}vh`);
+  const LAST = rooms.length - 1;
+  if (SC.beach && rooms[LAST].door) { segs.push({ type: 'exit', start: total, len: DOOR }); total += DOOR; }
 
   /* ---------- images ---------- */
   const stills = rooms.map(() => null);
@@ -191,6 +201,16 @@
     return (stills[i] = img);
   }
 
+  const sceneImg = {};
+  function loadScene(name) {
+    if (!SC[name]) return null;
+    if (sceneImg[name]) return sceneImg[name];
+    const img = new Image(); img.decoding = 'async';
+    img.onload = () => { img._ok = true; schedule(); };
+    img.src = `${SC[name].still}-1280.webp`;
+    return (sceneImg[name] = img);
+  }
+
   /* ---------- canvas & cover mapping ---------- */
   const view = { w: 0, h: 0, s: 1, dx: 0, dy: 0, dpr: 1 };
   function resize() {
@@ -199,6 +219,8 @@
     canvas.width = Math.round(view.w * view.dpr); canvas.height = Math.round(view.h * view.dpr);
     view.s = Math.max(view.w / IW, view.h / IH);
     view.dx = (view.w - IW * view.s) / 2; view.dy = (view.h - IH * view.s) / 2;
+    // the beach section starts right after the last scroll step, over the pinned stage
+    if (office) office.style.setProperty('--journey-gap', `${Math.round(total * view.h)}px`);
     layoutScreens(); schedule(true);
   }
   // room-relative image % → stage px, for a room at rest with no zoom (screens are laid out in this frame)
@@ -266,6 +288,50 @@
       }
     });
     ctx.filter = 'none';
+  }
+
+  // one stand-alone image (outside, beach) with its own camera: centre cx, cy in image px, zoom z
+  function paint(img, cx, cy, z, alpha = 1, blur = 0) {
+    if (!img || !img._ok || alpha <= 0.004) return false;
+    const S = view.s * z, hw = view.w / 2 / S, hh = view.h / 2 / S;
+    cx = Math.min(Math.max(cx, hw), IW - hw); cy = Math.min(Math.max(cy, hh), IH - hh);
+    ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
+    ctx.globalAlpha = alpha; ctx.filter = blur > 0.3 ? `blur(${blur.toFixed(1)}px)` : 'none';
+    ctx.drawImage(img, view.w / 2 - cx * S, view.h / 2 - cy * S, IW * S, IH * S);
+    ctx.globalAlpha = 1; ctx.filter = 'none';
+    return true;
+  }
+  function clearStage(img) {
+    ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
+    if (img && img._ok) { ctx.fillStyle = '#061A22'; ctx.fillRect(0, 0, view.w, view.h); }
+    else ctx.clearRect(0, 0, view.w, view.h);          // not loaded yet: the blurred preview behind shows
+  }
+  function hideLayers() { layers.forEach(L => { L.style.opacity = 0; L.classList.remove('vis'); }); }
+  // walking up to a door: aim drifts from the middle of the view to the door while the zoom grows
+  // at a constant perceived speed (exponential), with the same footstep sway as the turns
+  function doorCam(door, t) {
+    const e = ease(t), [dx, dy, zD] = door;
+    return {
+      cx: IW / 2 + (dx / 100 * IW - IW / 2) * e,
+      cy: IH / 2 + (dy / 100 * IH - IH / 2) * e + BOB * Math.sin(e * Math.PI * 6) * Math.sin(Math.PI * e),
+      z: Math.pow(zD, e),
+      blur: canBlur ? BLUR * Math.sin(Math.PI * Math.min(t, 1)) : 0,
+    };
+  }
+  // the room/beach we arrive in: still a step away when it fades in, settles at rest
+  const arriveZoom = t => Math.pow(1.35, 1 - ease(band(t, 0.45, 1)));
+  const crossfade = t => ease(band(t, 0.5, 0.9));
+
+  /* ---------- beach panels: they stand on the sand and tilt as they pass ---------- */
+  function shapePanels() {
+    const vh = view.h;
+    for (const el of panels) {
+      const r = el.getBoundingClientRect();
+      if (r.bottom < -vh || r.top > 2 * vh) continue;
+      const q = Math.max(-1, Math.min(1, (r.top + r.height / 2 - vh / 2) / (vh / 2 + r.height / 2)));
+      el.style.setProperty('--q', q.toFixed(3));
+      el.style.setProperty('--qa', Math.pow(Math.abs(q), 1.4).toFixed(3));
+    }
   }
 
   /* ---------- projective mapping for video screens ---------- */
@@ -400,15 +466,43 @@
   function render() {
     raf = 0;
     const top = journey.getBoundingClientRect().top;
-    const p = Math.min(Math.max(-top / view.h, 0), total - 0.0001);
+    const pRaw = Math.max(-top / view.h, 0);
+    if (panels.length && pRaw > total - 1.5) shapePanels();
+    stage.classList.toggle('outside', !!SC.exterior && pRaw < INTRO + DOOR * 0.4);
+    if (pRaw >= total && segs[segs.length - 1].type === 'exit') {
+      // on the beach: keep walking slowly toward the sea while the panels pass by
+      const beach = loadScene('beach'), q = Math.min((pRaw - total) / 4, 1);
+      clearStage(beach); paint(beach, IW / 2, IH / 2, 1 + 0.08 * q);
+      hideLayers(); setUI(-1); setVideoRoom(-1);
+      return;
+    }
+    const p = Math.min(pRaw, total - 0.0001);
     const seg = segs.find(s => p >= s.start && p < s.start + s.len) || segs[segs.length - 1];
     const t = (p - seg.start) / seg.len;
     current.seg = seg; current.t = t;
 
-    if (seg.type === 'rest') {
+    if (seg.type === 'intro') {
+      const ext = loadScene('exterior');
+      clearStage(ext); paint(ext, IW / 2, IH / 2, 1 + REST_ZOOM * t);
+      hideLayers(); setUI(0); setVideoRoom(-1);
+      loadStill(0);
+    } else if (seg.type === 'enter') {
+      const ext = loadScene('exterior'), a = crossfade(t), c = doorCam(SC.exterior.door, band(t, 0, 0.85));
+      if (a > 0.004) draw(clampCam({ x: roomX(0) + IW / 2, y: IH / 2, z: arriveZoom(t), blur: c.blur * 0.6 }), { 0: a });
+      else { clearStage(ext); hideLayers(); }
+      paint(ext, c.cx, c.cy, c.z, 1 - a, c.blur);
+      setUI(-1); setVideoRoom(t > 0.5 ? 0 : -1);
+      loadStill(1);
+    } else if (seg.type === 'exit') {
+      const room = rooms[LAST], a = crossfade(t), c = doorCam(room.door, band(t, 0, 0.85));
+      draw(clampCam({ x: roomX(LAST) + c.cx, y: c.cy, z: c.z, blur: c.blur }), {});
+      paint(loadScene('beach'), IW / 2, IH / 2, arriveZoom(t), a);
+      setUI(-1); setVideoRoom(-1);
+    } else if (seg.type === 'rest') {
       draw(clampCam(restCam(seg.room, t)), { [seg.room]: 1 });
       setVideoRoom(seg.room); setUI(seg.room);
       loadStill(seg.room + 1);
+      if (seg.room === LAST) loadScene('beach');
     } else {
       const cam = clampCam(transCam(seg, t));
       // screens of the room we leave fade out as we turn away; the next room's fade in as it arrives
@@ -423,7 +517,7 @@
   // stop everything when the tab is hidden
   document.addEventListener('visibilitychange', () => { if (document.hidden) playing.forEach(v => v.pause()); else playing.forEach(v => v.play().catch(() => {})); });
 
-  loadStill(0); loadStill(1);
+  loadScene('exterior'); loadStill(0); loadStill(1);
   resize();
 
   /* =====================================================================
