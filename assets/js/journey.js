@@ -109,7 +109,8 @@
     for (const room of rooms) {
       const ui = $(`.room-ui[data-room="${room.id}"]`);
       if (!ui) continue;
-      ui.style.setProperty('--room-bg', `url('${room.still}-${isMobile() ? 720 : 1280}.webp')`);
+      // absolute URL: a relative url() inside a custom property resolves against the stylesheet (assets/css/), not the page
+      ui.style.setProperty('--room-bg', `url('${new URL(`${room.still}-1280.webp`, location.href).href}')`);
       const list = [room.portalWork && worksById[room.portalWork], ...worksForRoom(room)].filter(Boolean).slice(0, 8);
       if (list.length) {
         const r = document.createElement('div'); r.className = 'static-rail';

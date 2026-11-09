@@ -272,7 +272,7 @@ dialog::backdrop { background: rgba(2, 10, 14, .82); backdrop-filter: blur(8px);
 .static .stage canvas, .static .screens, .static .loader { display: none; }
 .static .room-ui { position: relative; inset: auto; max-inline-size: none; opacity: 1; visibility: visible; min-block-size: 92vh;
   display: flex; flex-direction: column; justify-content: flex-end; padding: 120px var(--gutter) 40px;
-  background: linear-gradient(180deg, transparent 30%, rgba(6, 26, 34, .9)), var(--room-bg) center / cover no-repeat; }
+  background: linear-gradient(180deg, rgba(6, 26, 34, .25), rgba(6, 26, 34, .72) 38%, rgba(6, 26, 34, .94)), var(--room-bg) center / cover no-repeat; }
 .static .room-ui .w { opacity: 1; transform: none; }
 .static .rail { display: none; }
 .static .room-ui .static-rail { display: flex; gap: 12px; overflow-x: auto; padding-block: 16px 4px; }
