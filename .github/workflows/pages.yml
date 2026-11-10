@@ -26,6 +26,9 @@ jobs:
         run: |
           mkdir _site
           cp -r index.html .nojekyll assets _site/
+          # source material the page never loads (AI stills, raw transition clips): keep the upload small
+          rm -rf _site/assets/media/stills _site/assets/media/transitions
+          du -sh _site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
