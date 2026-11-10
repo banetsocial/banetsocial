@@ -217,3 +217,8 @@
 - Map: `assets/data/media-cdn.json` (local path → URL). `tools/build-site-data.js` swaps `full` for the CDN URL. The workflow deletes those files from `_site` before upload. Every link was checked: 200, identical size, range requests supported.
 - The local copies stay in git as a backup. A new video only needs `node <scratchpad>/upload-full.js <token>` (resumable) or a manual entry in the map.
 - Also: `stills/` and `transitions/` are not uploaded to Pages (the page never loads them).
+
+## Phone fixes: smooth card jump, look-around in rooms
+- **Card jump:** the animation now flies a stand-in (`.fly-ghost`, the poster on a box with no filters) instead of the `<video>` itself, which was busy loading and starting at that moment and made the jump stutter on phones. The video is revealed under it on landing, with a timer as a backup. 820ms on phones.
+- **Rooms on phones (portrait):** each room is a wide image, and a phone shows only a narrow slice of it, so the side screens were off-frame. Now a phone in portrait "looks around" each room during the scroll (`panPath`/`panX` in restCam): the first room goes middle → left → right, middle rooms left → right, and the office left → middle (toward the exit door). Rest is longer on phones (studio 1.5, others 1.2). Side screens are tappable on phones too (video only in the center portal, to save the battery).
+- **Still open:** the exit to the beach is still a code fade. It will feel like "the same video" only with a real Kling clip of the exit (office → door → beach), which is one of the 12 clips awaiting approval.

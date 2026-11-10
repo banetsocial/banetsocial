@@ -73,6 +73,9 @@
     if (from && !reduced) flyIn(from);
   }
   // the tapped card leaps off the wall, spins once and lands as the player
+  // What flies is a light stand-in (the poster on a plain box), not the <video>: on phones the video
+  // is busy starting to load and play at that exact moment, and moving it in 3D made the leap stutter.
+  // The real player is revealed under the stand-in as it lands.
   function flyIn(from) {
     const a = from.getBoundingClientRect(), b = pv.getBoundingClientRect();
     if (!a.width || !b.width) return;
@@ -81,14 +84,25 @@
     const s = Math.max(a.width / b.width, 0.08);
     const lift = Math.min(innerHeight * 0.12, 90);
     const P = 'perspective(1400px) ';
-    pv.animate([
-      { transform: `${P}translate(${dx}px,${dy}px) scale(${s}) rotateY(0deg)`, filter: 'brightness(1.25)' },
-      { transform: `${P}translate(${dx * 0.4}px,${dy * 0.4 - lift}px) scale(${(s + 1) * 0.5}) rotateY(200deg)`, offset: 0.5 },
-      { transform: `${P}translate(0,0) scale(1.05) rotateY(352deg)`, offset: 0.82 },
-      { transform: `${P}translate(0,0) scale(1) rotateY(360deg)`, filter: 'brightness(1)' }
-    ], { duration: 950, easing: 'cubic-bezier(.25,.75,.3,1)' });
+    const ghost = document.createElement('div');
+    ghost.className = 'fly-ghost';
+    Object.assign(ghost.style, { left: `${b.left}px`, top: `${b.top}px`, width: `${b.width}px`, height: `${b.height}px`,
+      backgroundImage: `url('${pv.poster}')` });
+    player.append(ghost);
+    pv.style.opacity = '0';
+    const dur = isMobile() ? 820 : 950;
+    const anim = ghost.animate([
+      { transform: `${P}translate3d(${dx}px,${dy}px,0) scale(${s}) rotateY(0deg)` },
+      { transform: `${P}translate3d(${dx * 0.4}px,${dy * 0.4 - lift}px,0) scale(${(s + 1) * 0.5}) rotateY(200deg)`, offset: 0.5 },
+      { transform: `${P}translate3d(0,0,0) scale(1.04) rotateY(354deg)`, offset: 0.85 },
+      { transform: `${P}translate3d(0,0,0) scale(1) rotateY(360deg)` }
+    ], { duration: dur, easing: 'cubic-bezier(.25,.75,.3,1)' });
+    const land = () => { pv.style.opacity = ''; ghost.remove(); };
+    anim.onfinish = land; anim.oncancel = land;
+    setTimeout(land, dur + 250);   // belt and braces: never leave the player hidden
+    player.addEventListener('close', land, { once: true });
     for (const el of [pcap, player.querySelector('.close')])
-      el.animate([{ opacity: 0 }, { opacity: 0, offset: 0.7 }, { opacity: 1 }], { duration: 1100 });
+      el.animate([{ opacity: 0 }, { opacity: 0, offset: 0.7 }, { opacity: 1 }], { duration: dur + 150 });
   }
   function openGallery(cat) {
     $('#gallery-title').textContent = SITE.cats[cat] || '';
@@ -157,8 +171,8 @@
 
   // timeline in "screens" (1 = one viewport of scroll). Phones get shorter stretches so every swipe moves something.
   const M = isMobile();
-  const REST = M ? { studio: 0.45, office: 0.5 } : { studio: 0.8, office: 0.7 };
-  const REST_DEFAULT = M ? 0.6 : 0.9, TRANS = M ? 1.25 : 1.5;
+  const REST = M ? { studio: 1.5, office: 0.6 } : { studio: 0.8, office: 0.7 };
+  const REST_DEFAULT = M ? 1.2 : 0.9, TRANS = M ? 1.25 : 1.5;
   const REST_ZOOM = 0.035;                 // camera creeps forward while you rest in a room
   const OVERLAP = 0.26;                    // share of a room's width that blends into its neighbour
   const STEP = IW * (1 - OVERLAP);         // distance between rooms in the panorama (virtual px)
@@ -268,7 +282,20 @@
   /* ---------- camera ---------- */
   // cam = { x, y } centre of view in panorama px, z = zoom (1 = cover fit)
   const roomX = i => i * STEP;
+  // Phones see only a narrow upright slice of each (wide) room, so the side screens fall outside the
+  // frame. There, resting in a room means looking around it: the view slides from one side to the other.
+  // The first room starts in the middle (where the walk-in lands), the last ends in the middle (its door).
+  function panPath(i) {
+    const hw = view.w / 2 / view.s, L = Math.min(hw, IW / 2), R = Math.max(IW - hw, IW / 2), C = IW / 2;
+    if (rooms[i].door && !rooms[i].next) return [L, C];
+    return i === 0 ? [C, L, R] : [L, R];
+  }
+  function panX(i, t) {
+    const P = panPath(i), n = P.length - 1, k = Math.min(Math.floor(t * n), n - 1), u = ease(t * n - k);
+    return P[k] + (P[k + 1] - P[k]) * u;
+  }
   function restCam(i, t) {
+    if (M && view.w < view.h) return { x: roomX(i) + panX(i, t), y: IH / 2, z: 1, blur: 0 };
     const z = rooms[i].next ? 1 + REST_ZOOM * t : 1;
     const [fx, fy] = focal(i);
     const Fx = roomX(i) + fx / 100 * IW, Fy = fy / 100 * IH;     // zoom toward the room's centre screen
@@ -436,9 +463,8 @@
     const order = roomScreens[ri].slice().sort((a, b) => (b.portal - a.portal) ||
       (Math.abs(a.quad[0][0] - 50) - Math.abs(b.quad[0][0] - 50)));
     for (const s of order) {
-      const live = s.portal || !isMobile();
-      s.el.inert = !live; s.el.tabIndex = live ? 0 : -1;
-      if (live) startVideo(s.el, s.work);
+      s.el.inert = false; s.el.tabIndex = 0;
+      if (s.portal || !isMobile()) startVideo(s.el, s.work);
     }
   }
 

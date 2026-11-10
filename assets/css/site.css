@@ -291,7 +291,6 @@ dialog::backdrop { background: rgba(2, 10, 14, .82); backdrop-filter: blur(8px);
 
 /* ---------- Mobile ---------- */
 @media (max-width: 767px) {
-  .screen.side { pointer-events: none; }
   .rail { display: flex; }
   .room-ui { inset-block-end: auto; inset-block-start: max(18px, env(safe-area-inset-top)); }
   .room-ui .lead { font-size: var(--step-0); }
@@ -328,4 +327,7 @@ html:not(.js) [data-reveal] .w { opacity: 1; transform: none; }
 /* player opens with the card flying in; backdrop fades under it */
 .player[open]::backdrop { animation: bd-in .5s ease both; }
 @keyframes bd-in { from { opacity: 0; } }
-.player video { transform-origin: 50% 50%; will-change: transform; }
+.player video { transform-origin: 50% 50%; }
+/* the stand-in that does the leap (see flyIn): poster on a box, its own GPU layer, no filters */
+.fly-ghost { position: fixed; z-index: 2; margin: 0; border-radius: 8px; background: #000 center / cover no-repeat;
+  box-shadow: var(--glow); transform-origin: 50% 50%; will-change: transform; backface-visibility: visible; pointer-events: none; }
