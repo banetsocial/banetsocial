@@ -266,3 +266,18 @@
 - **Frame loading (b1110q):** the frames download through an ordered queue (8 in parallel; the walk on screen first; within a walk every 4th frame → every 2nd → the rest), a frame that failed is retried (up to 3 times). Until everything has arrived `seqFrame` blends between the nearest frames that did arrive (before/after) instead of "stuck and jumps". `window.__journeyLoad = {want, got}` — sweep.mjs waits on it (up to 4 min) before measuring.
 - The "failures" in the live sweep were mostly `ERR_CERT_VERIFIER_CHANGED` of headless Chrome with a fresh profile + a slow line (~1MB/s) — not a site bug, but until now there was no retry at all.
 - Deploy: the deployment ID = the commit SHA. After a timeout, **a new commit and push** (a `workflow run` on the same SHA got stuck again).
+
+## Round 6 — reference video analysis (2026-11-10), plan not yet approved
+Reference (user's screen recording of a "one long film" scroll site) — what makes it work:
+- No fade to dark, no zoom on a still, no cuts. Every walk is real camera motion.
+- The camera pans sideways (real motion blur), an arch comes into view with the NEXT room already
+  visible through it, the camera walks through, the room settles. ~1s of motion, ~4s of rest.
+- A foreground pillar / door frame sweeps across the lens during the pan (natural place for a hidden cut).
+- One palette, one architecture, one light in all rooms.
+Ours: t1/t2/t4 fade to dark in the doorway; t2/t4 part A is a digital zoom on a frozen frame
+("a gate widening"); what is seen through our arches only resembles the next room, so a
+first→last clip has to invent the way; the AI tunnel breaks the architecture.
+Proposed (waiting for credits + approval): (1) edit each room still so its arch shows the real
+next-room still (~5 credits each, gpt-image-2.5-sunburst/edit); (2) regenerate walks as Kling
+first→last clips: pan toward the arch + walk through, motion blur (70 credits Standard 720p 5s);
+(3) pillar wipe as a fallback join; (4) prove on ONE walk first (~75 credits). Balance: 30.3.
