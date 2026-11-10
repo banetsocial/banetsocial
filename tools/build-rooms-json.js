@@ -101,13 +101,16 @@ const PHONE_TURN = { t1: 1, t2: 0.6, t3: 0.9, t4: 0 };
 // two-part walks (into a doorway, a moment of dark, out of the next one): the phone turn only covers
 // the first part, up to the dark moment at this clip second
 const JOIN_AT = { t3: 4.62 };
+// walks rebuilt by tools/build-joins.js: where their arch is in the picture, second by second — phones aim at it
+const joinsFile = path.join(__dirname, '..', 'assets/data/joins.json');
+const JOINS = fs.existsSync(joinsFile) ? JSON.parse(fs.readFileSync(joinsFile, 'utf8')) : {};
 const scrollAt = (time, sec) => { for (let j = 1; j < time.length; j++) if (time[j][1] >= sec) { const [t0, s0] = time[j - 1], [t1, s1] = time[j]; return +(t0 + (t1 - t0) * (sec - s0) / Math.max(s1 - s0, 1e-6)).toFixed(3); } return 1; };
 const seqs = {};
 for (const id of ['enter', 't1', 't2', 't3', 't4', 'exit']) {
   const dir = path.join(__dirname, '..', 'assets/media/sequences', id, 'd');
   const frames = fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => f.endsWith('.webp')).length : 0;
   if (frames) seqs[id] = { frames, fps: 24, steps: (MOTION[id] && MOTION[id].steps) || null, desktop: `assets/media/sequences/${id}/d/`, mobile: `assets/media/sequences/${id}/m/`,
-    time: (MOTION[id] && MOTION[id].time) || SEQ_TIME[id] || [[0, 0], [1, 5.04]], len: (MOTION[id] && MOTION[id].len) || 1, turn: PHONE_TURN[id] || 0, turnUntil: JOIN_AT[id] && MOTION[id] ? scrollAt(MOTION[id].time, JOIN_AT[id]) : 0.92 };
+    time: (MOTION[id] && MOTION[id].time) || SEQ_TIME[id] || [[0, 0], [1, 5.04]], len: (MOTION[id] && MOTION[id].len) || 1, turn: JOINS[id] ? 0 : PHONE_TURN[id] || 0, aim: JOINS[id] ? JOINS[id].aim : null, turnUntil: JOIN_AT[id] && MOTION[id] ? scrollAt(MOTION[id].time, JOIN_AT[id]) : 0.92 };
 }
 scenes.seqs = seqs;
 // living loops (tools/build-loops.sh): locked camera, drawn instead of the still while you stand there

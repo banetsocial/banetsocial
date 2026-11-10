@@ -252,14 +252,18 @@
       imgs[i] = img;
     });
   }
-  function seqFrame(id, t) {
-    const q = SEQ[id], imgs = seqImgs[id];
-    if (!q || !imgs) return null;
+  function seqSec(q, t) {
     const k = q.time; let sec = k[k.length - 1][1];
     for (let j = 1; j < k.length; j++) if (t <= k[j][0]) {
       const [t0, s0] = k[j - 1], [t1, s1] = k[j];
       sec = s0 + (s1 - s0) * (t - t0) / (t1 - t0); break;
     }
+    return sec;
+  }
+  function seqFrame(id, t) {
+    const q = SEQ[id], imgs = seqImgs[id];
+    if (!q || !imgs) return null;
+    const sec = seqSec(q, t);
     const pos = Math.min(q.frames - 1, Math.max(0, sec * q.fps)), want = Math.round(pos);
     const i0 = Math.floor(pos), i1 = Math.min(i0 + 1, q.frames - 1);
     if (imgs[i0] && imgs[i0]._ok && imgs[i1] && imgs[i1]._ok) {
@@ -637,7 +641,7 @@
       if (seg.room === LAST) loadScene('beach');
     } else if (seqFrame(transId(seg), t)) {
       // through the arch into the next room: the real walk, scrubbed by the scroll
-      walk(seqFrame(transId(seg), t), seg.from, t, SEQ[transId(seg)].turn || 0, SEQ[transId(seg)].turnUntil || 0.92);
+      walk(seqFrame(transId(seg), t), seg.from, t, SEQ[transId(seg)].turn || 0, SEQ[transId(seg)].turnUntil || 0.92, SEQ[transId(seg)].aim, seqSec(SEQ[transId(seg)], t));
       useLoop(null); setVideoRoom(t > 0.85 ? seg.to : -1);
       loadStill(seg.to + 1); loadSeq(seg.to === LAST ? 'exit' : 't' + (seg.to + 1));
     } else {
@@ -657,10 +661,17 @@
   // as the next room opens up.
   // ?turn=x overrides every walk's phone turn (for side-by-side checks)
   const TURN_OVERRIDE = new URLSearchParams(location.search).get("turn");
-  function walk(fr, from, t, turn = 0, until = 0.92) {
+  function walk(fr, from, t, turn = 0, until = 0.92, aim = null, sec = 0) {
     const r = restCam(from, 1), u = ease(band(t, 0, 0.3));
     let cx = r.x - roomX(from);
-    cx += (IW / 2 - cx) * u;
+    // phones on a rebuilt walk: aim the upright slice at the arch (its place in the picture is known per second)
+    let to = IW / 2;
+    if (aim && M && view.w < view.h && TURN_OVERRIDE === null) {
+      let x = aim[aim.length - 1][1];
+      for (let j = 1; j < aim.length; j++) if (sec <= aim[j][0]) { const [s0, x0] = aim[j - 1], [s1, x1] = aim[j]; x = x0 + (x1 - x0) * Math.max(0, sec - s0) / (s1 - s0); break; }
+      to = IW * x;
+    }
+    cx += (to - cx) * u;
     // (a plain sine: it already starts and ends gently; easing it as well made the turn snap)
     if (TURN_OVERRIDE !== null) turn = +TURN_OVERRIDE;
     if (turn && M && view.w < view.h) cx += turn * (IW / 2) * (until < 0.9

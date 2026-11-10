@@ -255,3 +255,11 @@
 - Clip cost: 2 × 70 = 140. **Balance: 30.3.**
 **Checks that were tried and rejected:** motion-compensated morph detection (`tools/qa/morph.js`) — gave the known morph (old t2) the *lowest* score, so content is checked by eye frame by frame.
 **To convert the remaining walks (t1, t2, t4, exit) to the new method:** 8 clips — 560 (Standard) or 720 (Pro 1080p). Needs a top-up of credits.
+
+## Round 5 — walks 1, 2 and 4 also on the "hidden cut" method, with no credits (10.11.2026)
+- `tools/build-joins.js` builds `t1/t2/t4-join.mp4` from **existing** material: Part A = the clean part of the old clip (t1: the first 1.9s of real walking; t2/t4: only the first frame, because the morphing starts almost immediately) + a push toward the arch + fade to the dark color; Part B = the next room opens up out of the dark (the arrival still, a zoom-out that settles). The whole middle section, where the furniture warped, is not shown.
+- The script also writes `assets/data/joins.json`: where the arch sits in the frame per second (`aim`). On the phone `walk()` points the vertical strip there (replaces `PHONE_TURN` for those walks). Checked in phone screenshots: you enter the arch, see the next room inside it, dark, new room.
+- t3 stays on its Kling clips (the two-part one). enter/exit were not touched — they're clean (a door opening).
+- Deploy: an artifact of ~1850 files timed out once in `syncing_files` (10 min); the second push went through. `loops/src` is no longer uploaded.
+- Local QA: PASS (0 spikes / 0 blank / 0 errors). On the live site, on a first visit with fast scrolling, the sweep sees "stuck and then jumps" on the phone — frames that haven't finished downloading (the phone frames are now 1280). To be examined.
+- **Limitation:** in t2/t4 Part A is a digital zoom on a still frame (no parallax). The full solution = 8 new Kling clips (560 Standard / 720 Pro). Balance 30.3.
