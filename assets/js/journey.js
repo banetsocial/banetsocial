@@ -238,19 +238,50 @@
   // code-built camera move stands in.
   const SEQ = SC.seqs || {};
   const seqImgs = {};
-  function loadSeq(id) {
+  // Frames come down a few at a time, in a set order: the walk you are in (or about to enter) first,
+  // and within a walk every 4th frame, then every 2nd, then the rest — so a rough walk is usable at
+  // once and sharpens as you go. A frame that fails is tried again; nothing stays missing.
+  const PARALLEL = 8, queue = [];
+  let busy = 0;
+  const load = window.__journeyLoad = { want: 0, got: 0 };
+  function pump() {
+    while (busy < PARALLEL && queue.length) {
+      const job = queue.shift(); busy++;
+      const img = job.img;
+      img.onload = () => { img._ok = true; busy--; load.got++; schedule(); pump(); };
+      img.onerror = () => {
+        busy--;
+        if (++job.tries < 4) setTimeout(() => { queue.unshift(job); pump(); }, 400 * job.tries);
+        else load.got++;                                   // give up on this one; its neighbours stand in
+        pump();
+      };
+      img.src = job.url + (job.tries ? '?r=' + job.tries : '');
+    }
+  }
+  let front = null;
+  function loadSeq(id, now = false) {
     const q = SEQ[id];
-    if (!q || seqImgs[id]) return;
+    if (!q) return;
+    if (seqImgs[id]) {
+      // already asked for: if this is the walk on screen, move what is still waiting to the front
+      if (now && front !== id) {
+        front = id;
+        const mine = queue.filter(j => j.id === id);
+        if (mine.length) { const rest = queue.filter(j => j.id !== id); queue.length = 0; queue.push(...mine, ...rest); }
+      }
+      return;
+    }
     const imgs = seqImgs[id] = [], base = M ? q.mobile : q.desktop;
-    // every 4th frame first (a rough walk is usable at once), then fill in the rest
     const order = [];
     for (const step of [4, 2, 1]) for (let i = 0; i < q.frames; i += step) if (!order.includes(i)) order.push(i);
-    order.forEach(i => {
+    const jobs = order.map(i => {
       const img = new Image(); img.decoding = 'async';
-      img.onload = () => { img._ok = true; schedule(); };
-      img.src = base + String(i + 1).padStart(4, '0') + '.webp';
       imgs[i] = img;
+      return { id, img, url: base + String(i + 1).padStart(4, '0') + '.webp', tries: 0 };
     });
+    load.want += jobs.length;
+    if (now) { front = id; queue.unshift(...jobs); } else queue.push(...jobs);
+    pump();
   }
   function seqSec(q, t) {
     const k = q.time; let sec = k[k.length - 1][1];
@@ -273,12 +304,14 @@
       const f = pos - i0;
       return calm ? { a: imgs[i0], b: imgs[i1], f } : (f < 0.5 ? { a: imgs[i0], b: imgs[i0], f: 0 } : { a: imgs[i1], b: imgs[i1], f: 0 });
     }
-    for (let d = 0; d < q.frames; d++) {            // nearest frame that has arrived
-      const a = imgs[want - d], b = imgs[want + d];
-      if (a && a._ok) return { a, b: a, f: 0 };
-      if (b && b._ok) return { a: b, b, f: 0 };
-    }
-    return null;
+    // not everything has arrived yet: glide between the nearest frames that have (one behind, one
+    // ahead) instead of holding one and then jumping — a slightly soft walk, never a stuck one
+    let lo = -1, hi = -1;
+    for (let i = i0; i >= 0; i--) if (imgs[i] && imgs[i]._ok) { lo = i; break; }
+    for (let i = i1; i < q.frames; i++) if (imgs[i] && imgs[i]._ok) { hi = i; break; }
+    if (lo < 0 && hi < 0) return null;
+    if (lo < 0 || hi < 0 || lo === hi) { const a = imgs[lo < 0 ? hi : lo]; return { a, b: a, f: 0 }; }
+    return { a: imgs[lo], b: imgs[hi], f: Math.min(1, Math.max(0, (pos - lo) / (hi - lo))) };
   }
   // draw a walk frame (pair) with one camera
   function paintPair(fr, cx, cy, z) {
@@ -612,9 +645,9 @@
       const fr = seqFrame('enter', t), z = 1 + REST_ZOOM * (1 - ease(band(t, 0, 0.35)));
       useLoop(null); paintPair(fr, IW / 2, IH / 2, z);
       hideLayers(); setUI(-1); setVideoRoom(t > 0.8 ? 0 : -1);
-      loadStill(1); loadSeq('t1');
+      loadSeq('enter', true); loadStill(1); loadSeq('t1');
     } else if (seg.type === 'enter') {
-      loadSeq('enter'); useLoop(null);
+      loadSeq('enter', true); useLoop(null);
       const ext = loadScene('exterior'), a = crossfade(t), c = doorCam(SC.exterior.door, band(t, 0, 0.85));
       if (a > 0.004) draw(clampCam({ x: roomX(0) + IW / 2, y: IH / 2, z: arriveZoom(t), blur: c.blur * 0.6 }), { 0: a });
       else { clearStage(ext); hideLayers(); }
@@ -624,9 +657,9 @@
     } else if (seg.type === 'exit' && seqFrame('exit', t)) {
       // out through the office door: start where the room's camera left off, settle into the clip
       walk(seqFrame('exit', t), LAST, t);
-      setVideoRoom(-1); loadScene('beach'); useLoop(null);
+      loadSeq('exit', true); setVideoRoom(-1); loadScene('beach'); useLoop(null);
     } else if (seg.type === 'exit') {
-      loadSeq('exit'); useLoop(null);
+      loadSeq('exit', true); useLoop(null);
       const room = rooms[LAST], a = crossfade(t), c = doorCam(room.door, band(t, 0, 0.85));
       draw(clampCam({ x: roomX(LAST) + c.cx, y: c.cy, z: c.z, blur: c.blur }), {});
       paint(loadScene('beach'), IW / 2, IH / 2, arriveZoom(t), a);
@@ -643,9 +676,10 @@
       // through the arch into the next room: the real walk, scrubbed by the scroll
       walk(seqFrame(transId(seg), t), seg.from, t, SEQ[transId(seg)].turn || 0, SEQ[transId(seg)].turnUntil || 0.92, SEQ[transId(seg)].aim, seqSec(SEQ[transId(seg)], t));
       useLoop(null); setVideoRoom(t > 0.85 ? seg.to : -1);
+      loadSeq(transId(seg), true);
       loadStill(seg.to + 1); loadSeq(seg.to === LAST ? 'exit' : 't' + (seg.to + 1));
     } else {
-      loadSeq(transId(seg)); useLoop(null);
+      loadSeq(transId(seg), true); useLoop(null);
       const cam = clampCam(transCam(seg, t));
       // screens of the room we leave fade out as we turn away; the next room's fade in as it arrives
       draw(cam, { [seg.from]: 1 - band(cam.p, 0.2, 0.55), [seg.to]: band(cam.p, 0.45, 0.8) });

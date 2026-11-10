@@ -53,6 +53,11 @@ const frame = () => new Promise(r => setTimeout(r, 0));
 
 // pass 1: walk through slowly so every walk's frames are downloaded
 for (let p = 0; p < end; p += 0.25) { await evaluate(`scrollTo(0, innerHeight*${p})`); await sleep(350); }
+// ...and wait until they have all arrived (up to 4 minutes), so the measurement is of the finished walk
+const t0 = Date.now(); let ld;
+for (;;) { ld = await evaluate(`JSON.stringify(window.__journeyLoad || null)`); ld = ld && JSON.parse(ld);
+  if (!ld || ld.got >= ld.want || Date.now() - t0 > 240000) break; await sleep(1000); }
+const loadNote = ld ? `frames ${ld.got}/${ld.want}, waited ${((Date.now() - t0) / 1000).toFixed(0)}s` : 'no load counter';
 await evaluate(`scrollTo(0, 0)`); await sleep(1500);
 
 // pass 2: measure
@@ -81,7 +86,7 @@ rows.forEach((r, i) => {
 const blank = rows.filter(r => r.mean < 4).map(r => r.p);
 const report = { url, mode, step, steps: rows.length, errors, blank, spikes: spikes.sort((a, b) => b.score - a.score), rows };
 writeFileSync(new URL(`${mode}.json`, outDir), JSON.stringify(report, null, 1));
-console.log(`${mode}: ${rows.length} steps, ${spikes.length} spikes, ${blank.length} blank, ${errors.length} errors`);
+console.log(`${mode}: ${rows.length} steps, ${spikes.length} spikes, ${blank.length} blank, ${errors.length} errors  (${loadNote})`);
 for (const s of report.spikes.slice(0, 12)) console.log(`  p=${s.p}  change ${s.diff} vs typical ${s.localMedian}  (x${s.score})`);
 if (errors.length) console.log('  errors:', errors.slice(0, 5));
 process.exit(0);
