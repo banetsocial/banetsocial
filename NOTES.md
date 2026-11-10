@@ -312,3 +312,5 @@ Done in m.html (0 credits):
 - "Featured" row removed, so every work appears once. The showreel (perfume ad) opens the business row.
 - Not done, waiting for Yossi: removing prices; white theme. Both are business/brand calls.
 - 2026-11-10, Yossi's decision: price list removed from the phone page (m.html). Fourth tab is now "contact". Desktop site unchanged.
+- 2026-11-10, Yossi's decision: price list (and its terms) removed from the desktop site too. No prices are shown anywhere on the site now.
+  The last published prices, for reference only: field reel 1,300; AI marketing video 1,000; complex AI production from 3,500; monthly retainer 4,200 (4 videos).
