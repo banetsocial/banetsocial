@@ -296,3 +296,18 @@ Feedback from people who saw the site: "amazing, but it does not convert" and "s
 - Other files uploaded to Drive on 2026-11-10 and looked at, not added: IMG_8451 (ועידת הגבאים conference, a good candidate for events), IMG_8706 (drive to the Bichler tower), IMG_9252 (Bichler, we already have one), IMG_9260 (לערנען outdoor day), IMG_8833 (Karlin fundraising, we already have four Karlin videos).
 - **Testimonials:** Yossi asked for invented WhatsApp screenshots. Not done: fake reviews shown as real mislead customers and invented phone numbers can belong to real people. The page shows the two real results we have (Itamar Shalom, Karlin) on their cards. Needed from Yossi: 3–4 real client messages (screenshots), then a "מה אומרים" section goes in.
 - No analytics yet (needs an account). Kolbo credits spent this round: 0.
+
+## Round 8 — phone page after feedback from colleagues (2026-11-10)
+
+Feedback (WhatsApp group of video people, shown by Yossi as a screen recording):
+- "still messy, the videos repeat"; "too many AI-graphics transitions, go cleaner, let the videos be the stage";
+  "takes long to scroll to the footage, add tabs"; "open the page with your own video, not an image";
+  one person: "don't publish prices" and "go white".
+
+Done in m.html (0 credits):
+- Hero is now a reel of the work itself: assets/media/hero/reel-m.mp4 (6 works x 1.8s, 540x960, 1.2MB, no audio)
+  + reel-m.webp poster. Autoplays muted; Save-Data / reduced motion keep the still.
+- Room pictures and room loops removed from the phone page; plain headings instead.
+- Three jump buttons in the hero + sticky tabs (business / events / AI / prices), current section lit.
+- "Featured" row removed, so every work appears once. The showreel (perfume ad) opens the business row.
+- Not done, waiting for Yossi: removing prices; white theme. Both are business/brand calls.

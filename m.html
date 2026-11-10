@@ -13,13 +13,13 @@
 <meta property="og:description" content="רילס לעסקים, תיעוד אירועים והפקות AI.">
 <meta property="og:image" content="https://banetsocial.github.io/banetsocial/assets/media/brand/og.jpg">
 <link rel="icon" href="assets/media/brand/favicon.png" type="image/png">
-<link rel="preload" as="image" href="assets/media/rooms/exterior-720.webp">
+<link rel="preload" as="image" href="assets/media/hero/reel-m.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-/* Banet Social — the light page for phones. Same house, same colours as the journey, but nothing to wait for:
-   stills + tiny loops for the rooms, short previews for the works, WhatsApp always one thumb away. */
+/* Banet Social — the light page for phones. The videos are the stage: the page opens on a reel of the work itself,
+   the three kinds of work are one tap away, and WhatsApp is always under the thumb. */
 :root {
   --bg: #061A22; --surface: #0B2A35; --surface-2: #10394A; --line: #1F5866;
   --text: #D8F3F7; --dim: #8FC3CC; --accent: #2EC4D6; --accent-ink: #04161C; --warm: #F2A65A; --wa: #25D366;
@@ -53,17 +53,18 @@ p { margin: 0; }
 
 /* hero */
 .hero { position: relative; min-block-size: 100svh; display: flex; flex-direction: column; justify-content: flex-end; isolation: isolate; }
-.hero-bg { position: absolute; inset: 0; z-index: -2; background: #061A22 url(assets/media/rooms/exterior-720.webp) center / cover no-repeat; }
+.hero-bg { position: absolute; inset: 0; z-index: -2; background: #061A22 url(assets/media/hero/reel-m.webp) center / cover no-repeat; }
 .hero-bg video { inline-size: 100%; block-size: 100%; object-fit: cover; }
 .hero::after { content: ""; position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(rgba(4,16,21,.55), rgba(4,16,21,0) 22%, rgba(4,16,21,.1) 42%, rgba(4,16,21,.92) 72%, #061A22); }
+  background: linear-gradient(rgba(4,16,21,.5), rgba(4,16,21,0) 18%, rgba(4,16,21,0) 46%, rgba(4,16,21,.88) 76%, #061A22); }
 .hero-top { position: absolute; inset-block-start: max(14px, env(safe-area-inset-top)); inset-inline: var(--g); display: flex; align-items: center; gap: 10px; }
 .hero-top img { inline-size: 44px; block-size: auto; }
 .hero-top b { font-family: var(--font-display); color: #fff; font-size: 1.05rem; }
 .hero-body { padding: 0 var(--g) 26px; display: grid; gap: 14px; }
 .hero-body .sub { font-size: 1.15rem; color: var(--text); max-inline-size: 30ch; }
-.proof { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 2px 0 4px; list-style: none; }
-.proof li { padding: 5px 12px; border-radius: 999px; border: 1px solid rgba(46,196,214,.45); background: rgba(6,26,34,.6); font-size: .9rem; color: #fff; }
+.jump { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.jump a { display: grid; place-items: center; min-block-size: 46px; border-radius: 12px; border: 1px solid rgba(216,243,247,.4);
+  background: rgba(6,26,34,.55); backdrop-filter: blur(6px); color: #fff; font-weight: 700; text-decoration: none; }
 .hero-cta { display: grid; gap: 10px; }
 .micro { font-size: .9rem; color: var(--dim); text-align: center; }
 
@@ -73,14 +74,16 @@ section { padding-block: 44px 8px; }
 .sec-head p { color: var(--dim); }
 .eyebrow { font-size: .85rem; letter-spacing: .08em; color: var(--accent); font-weight: 700; }
 
-/* a room of the house as a section header */
-.room { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #0B2A35 center / cover no-repeat; isolation: isolate; }
-.room video { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; z-index: -2; }
-.room::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(rgba(6,26,34,.15), rgba(6,26,34,.1) 40%, rgba(6,26,34,.95)); }
-.room-text { position: absolute; inset-inline: var(--g); inset-block-end: 12px; display: grid; gap: 4px; }
-.room-text p { color: var(--text); }
-.cat { padding-block: 0 8px; }
+/* the three kinds of work stay one tap away while scrolling */
+.tabs { position: sticky; inset-block-start: 0; z-index: 20; display: flex; gap: 6px; padding: 8px var(--g);
+  background: rgba(6,26,34,.94); backdrop-filter: blur(10px); border-block-end: 1px solid var(--line); }
+.tabs a { flex: 1; display: grid; place-items: center; min-block-size: 40px; border-radius: 999px; color: var(--dim); font-weight: 700;
+  font-size: .95rem; text-decoration: none; white-space: nowrap; }
+.tabs a.on { background: var(--accent); color: var(--accent-ink); }
+.cat { padding-block: 34px 8px; scroll-margin-block-start: 56px; }
+.cat .sec-head { margin-block-end: 0; }
 .cat .btn { margin: 16px var(--g) 0; }
+#prices { scroll-margin-block-start: 56px; }
 
 /* rows of works: swipe sideways, each card is a phone-shaped video */
 .row { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 16px var(--g) 6px; scroll-padding-inline: var(--g);
@@ -142,56 +145,51 @@ dialog::backdrop { background: rgba(2,10,14,.94); }
 .x { position: fixed; z-index: 2; inset-block-start: max(10px, env(safe-area-inset-top)); inset-inline-end: 10px; inline-size: 44px; block-size: 44px;
   border-radius: 50%; border: 1px solid var(--line); background: var(--surface); font-size: 26px; line-height: 1; cursor: pointer; }
 
-@media (min-width: 700px) { .card { inline-size: 240px; } .room { aspect-ratio: 16 / 7; } }
+@media (min-width: 700px) { .card { inline-size: 240px; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .bar, .thumb video { transition: none; } }
 </style>
 </head>
 <body>
 
 <header class="hero">
-  <div class="hero-bg"><video id="hero-v" muted loop playsinline preload="none" poster="assets/media/rooms/exterior-720.webp" aria-hidden="true"></video></div>
+  <div class="hero-bg"><video id="hero-v" src="assets/media/hero/reel-m.mp4" poster="assets/media/hero/reel-m.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video></div>
   <div class="hero-top"><img src="assets/media/brand/logo-mark-240.png" alt="" width="237" height="240"><b>בנט סושיאל</b></div>
   <div class="hero-body wrap">
     <h1>סרטונים שמביאים לכם לקוחות.</h1>
-    <p class="sub">רילס לעסקים, תיעוד אירועים והפקות AI. מהרעיון ועד הקובץ המוכן.</p>
-    <ul class="proof">
-      <li>עשרות לקוחות</li>
-      <li>יותר משנתיים בסושיאל</li>
-      <li>מסירה עד 5 ימי עסקים</li>
-    </ul>
+    <p class="sub">רילס לעסקים, תיעוד אירועים והפקות AI.</p>
+    <nav class="jump" aria-label="סוגי העבודות">
+      <a href="#business">לעסקים</a>
+      <a href="#events">אירועים</a>
+      <a href="#ai">AI</a>
+    </nav>
     <div class="hero-cta">
       <a class="btn btn-wa" data-wa="היי יוסי, הגעתי מהאתר ואני רוצה סרטון. מה שאני צריך: " target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><use href="#wa"/></svg>שלחו לי הודעה בוואטסאפ</a>
-      <a class="btn btn-ghost" href="#works">לראות עבודות</a>
     </div>
-    <p class="micro">כותבים בשתי שורות מה אתם צריכים, ומשם ממשיכים.</p>
   </div>
 </header>
 
-<main>
-  <section id="works" aria-labelledby="works-t">
-    <div class="sec-head pad wrap">
-      <span class="eyebrow">עבודות נבחרות</span>
-      <h2 id="works-t">קודם כול, תראו.</h2>
-      <p>נגיעה על סרטון פותחת אותו במסך מלא, עם סאונד.</p>
-    </div>
-    <div class="row" data-row="featured"></div>
-    <p class="hint">החליקו הצידה לעוד ←</p>
-  </section>
+<nav class="tabs" id="tabs" aria-label="ניווט בעמוד">
+  <a href="#business">לעסקים</a>
+  <a href="#events">אירועים</a>
+  <a href="#ai">AI</a>
+  <a href="#prices">מחירון</a>
+</nav>
 
+<main>
   <section class="cat" id="business" aria-labelledby="biz-t">
-    <div class="room" data-room="business"><div class="room-text"><h2 id="biz-t">סרטונים לעסק</h2><p>רילס לעסקים, נדל״ן ובתי קפה. מצולמים אצלכם, ערוכים עד הפריים האחרון.</p></div></div>
+    <div class="sec-head pad wrap"><h2 id="biz-t">סרטונים לעסק</h2><p>נגיעה על סרטון פותחת אותו במסך מלא, עם סאונד.</p></div>
     <div class="row" data-row="business"></div>
     <a class="btn btn-wa" data-wa="היי יוסי, מעניין אותי סרטון לעסק שלי" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><use href="#wa"/></svg>אני רוצה סרטון לעסק</a>
   </section>
 
   <section class="cat" id="events" aria-labelledby="ev-t">
-    <div class="room" data-room="events"><div class="room-text"><h2 id="ev-t">אירועים ומוזיקה</h2><p>הרגעים שלא חוזרים: אירועים, תזמורות, פסטיבלים ומוזיקה חיה.</p></div></div>
+    <div class="sec-head pad wrap"><h2 id="ev-t">אירועים ומוזיקה</h2><p>אירועים, תזמורות ומוזיקה חיה.</p></div>
     <div class="row" data-row="events"></div>
     <a class="btn btn-wa" data-wa="היי יוסי, יש לי אירוע ואני רוצה תיעוד וידאו" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><use href="#wa"/></svg>יש לי אירוע</a>
   </section>
 
   <section class="cat" id="ai" aria-labelledby="ai-t">
-    <div class="room" data-room="ai"><div class="room-text"><h2 id="ai-t">הפקות AI</h2><p>מה שאי אפשר לצלם, אפשר לייצר. מהתסריט ועד הסאונד.</p></div></div>
+    <div class="sec-head pad wrap"><h2 id="ai-t">הפקות AI</h2><p>מה שאי אפשר לצלם, אפשר לייצר.</p></div>
     <div class="row" data-row="ai"></div>
     <a class="btn btn-wa" data-wa="היי יוסי, מעניינת אותי הפקת AI" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><use href="#wa"/></svg>אני רוצה הפקת AI</a>
   </section>
@@ -285,7 +283,7 @@ dialog::backdrop { background: rgba(2,10,14,.94); }
 
 <noscript><p class="pad" style="padding-block:20px">לצפייה בכל העבודות: <a href="index.html?full=1">האתר המלא</a>.</p></noscript>
 
-<script src="assets/data/site-data.js?v=b1110r"></script>
+<script src="assets/data/site-data.js?v=b1110s"></script>
 <script>
 (() => {
   const WA = 'https://wa.me/972524558719?text=';
@@ -293,8 +291,6 @@ dialog::backdrop { background: rgba(2,10,14,.94); }
   for (const a of document.querySelectorAll('[data-wa]')) a.href = wa(a.dataset.wa);
 
   const S = window.SITE || { works: [] }, byId = Object.fromEntries(S.works.map(w => [w.id, w]));
-  // the six that open the page: one of each kind first, strongest results up front
-  const FEATURED = ['showreel', 'itamar-shalom', 'ai-slichti', 'aron-kodesh', 'orchestra', 'karlin-renovation'];
   const lite = (navigator.connection && navigator.connection.saveData) || matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const card = w => {
@@ -309,9 +305,9 @@ dialog::backdrop { background: rgba(2,10,14,.94); }
     return b;
   };
   for (const row of document.querySelectorAll('[data-row]')) {
-    const k = row.dataset.row;
-    const list = k === 'featured' ? FEATURED.map(id => byId[id]).filter(Boolean)
-      : S.works.filter(w => w.category === k).sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+    const k = row.dataset.row, top = w => (w.category === 'showreel' ? 2 : w.featured ? 1 : 0);
+    // every work appears once; the product ad (the showreel) opens the business row
+    const list = S.works.filter(w => w.category === k || (k === 'business' && w.category === 'showreel')).sort((a, b) => top(b) - top(a));
     row.append(...list.map(card));
   }
 
@@ -330,23 +326,17 @@ dialog::backdrop { background: rgba(2,10,14,.94); }
   }, { rootMargin: '0px 120px', threshold: [0, .6] });
   for (const c of document.querySelectorAll('.card')) seen.observe(c);
 
-  // the rooms of the house: still first, the tiny loop joins when the room is on screen
-  const rooms = new IntersectionObserver(es => {
-    for (const e of es) {
-      const r = e.target;
-      if (e.isIntersecting && !r._bg) { r._bg = 1; r.style.backgroundImage = `url(assets/media/rooms/${r.dataset.room}-720.webp)`; }
-      if (lite) continue;
-      if (e.isIntersecting) {
-        if (!r._v) { const v = r._v = document.createElement('video'); v.muted = v.loop = v.playsInline = true; v.setAttribute('aria-hidden', 'true');
-          v.src = `assets/media/loops/${r.dataset.room}-m.mp4`; r.prepend(v); }
-        r._v.play().catch(() => {});
-      } else if (r._v) r._v.pause();
-    }
-  }, { rootMargin: '200px 0px' });
-  for (const r of document.querySelectorAll('.room')) rooms.observe(r);
-
+  // the reel of the work plays the moment the page opens; data-saver and reduced-motion visitors keep the still
   const hv = document.getElementById('hero-v');
-  if (!lite) { hv.src = 'assets/media/loops/exterior-m.mp4'; hv.play().catch(() => {}); }
+  if (lite) { hv.removeAttribute('autoplay'); hv.pause(); hv.removeAttribute('src'); hv.load(); }
+  else { hv.play().catch(() => {}); new IntersectionObserver(([e]) => e.isIntersecting ? hv.play().catch(() => {}) : hv.pause()).observe(hv); }
+
+  // the tab of the section being read is lit
+  const tabs = [...document.querySelectorAll('#tabs a')];
+  const lit = new IntersectionObserver(es => {
+    for (const e of es) if (e.isIntersecting) for (const t of tabs) t.classList.toggle('on', t.hash === '#' + e.target.id);
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  for (const t of tabs) lit.observe(document.querySelector(t.hash));
 
   // player
   const dlg = document.getElementById('player'), pv = document.getElementById('p-v'), cap = document.getElementById('p-cap'), pwa = document.getElementById('p-wa');
