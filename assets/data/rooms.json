@@ -687,33 +687,153 @@
         2.9
       ]
     },
-    "enterSeq": {
-      "frames": 76,
-      "fps": 15,
-      "desktop": "assets/media/sequences/enter/d/",
-      "mobile": "assets/media/sequences/enter/m/",
-      "time": [
-        [
-          0,
-          0
-        ],
-        [
-          0.35,
-          2.5
-        ],
-        [
-          0.8,
-          3.75
-        ],
-        [
-          1,
-          5.04
-        ]
-      ]
-    },
     "beach": {
       "still": "assets/media/rooms/beach",
       "lqip": "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAACwBACdASoYAA4APtFUo0uoJKMhsAgBABoJagCdMoRwACWivgLH9PT0vncsUo6AAP32niu4Wi8ym7bu9fVkCiMRwSuE0uDLKuZ6f/7zWjpoNSPP6jvSVdoCGgrwyPkLoKr+ZMqUsHQoSSjkxV4icPbBFuDcPXes2Sct99/ZABHpdA8IM7tJlK2AAAA="
+    },
+    "seqs": {
+      "enter": {
+        "frames": 76,
+        "fps": 15,
+        "desktop": "assets/media/sequences/enter/d/",
+        "mobile": "assets/media/sequences/enter/m/",
+        "time": [
+          [
+            0,
+            0
+          ],
+          [
+            0.35,
+            2.5
+          ],
+          [
+            0.8,
+            3.75
+          ],
+          [
+            1,
+            5.04
+          ]
+        ]
+      },
+      "t1": {
+        "frames": 76,
+        "fps": 15,
+        "desktop": "assets/media/sequences/t1/d/",
+        "mobile": "assets/media/sequences/t1/m/",
+        "time": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            5.04
+          ]
+        ]
+      },
+      "t2": {
+        "frames": 76,
+        "fps": 15,
+        "desktop": "assets/media/sequences/t2/d/",
+        "mobile": "assets/media/sequences/t2/m/",
+        "time": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            5.04
+          ]
+        ]
+      },
+      "t3": {
+        "frames": 76,
+        "fps": 15,
+        "desktop": "assets/media/sequences/t3/d/",
+        "mobile": "assets/media/sequences/t3/m/",
+        "time": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            5.04
+          ]
+        ]
+      },
+      "t4": {
+        "frames": 76,
+        "fps": 15,
+        "desktop": "assets/media/sequences/t4/d/",
+        "mobile": "assets/media/sequences/t4/m/",
+        "time": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            5.04
+          ]
+        ]
+      },
+      "exit": {
+        "frames": 76,
+        "fps": 15,
+        "desktop": "assets/media/sequences/exit/d/",
+        "mobile": "assets/media/sequences/exit/m/",
+        "time": [
+          [
+            0,
+            0
+          ],
+          [
+            0.3,
+            1.8
+          ],
+          [
+            0.75,
+            3.4
+          ],
+          [
+            1,
+            5.04
+          ]
+        ]
+      }
+    },
+    "loops": {
+      "exterior": {
+        "desktop": "assets/media/loops/exterior-d.mp4",
+        "mobile": "assets/media/loops/exterior-m.mp4"
+      },
+      "studio": {
+        "desktop": "assets/media/loops/studio-d.mp4",
+        "mobile": "assets/media/loops/studio-m.mp4"
+      },
+      "business": {
+        "desktop": "assets/media/loops/business-d.mp4",
+        "mobile": "assets/media/loops/business-m.mp4"
+      },
+      "events": {
+        "desktop": "assets/media/loops/events-d.mp4",
+        "mobile": "assets/media/loops/events-m.mp4"
+      },
+      "ai": {
+        "desktop": "assets/media/loops/ai-d.mp4",
+        "mobile": "assets/media/loops/ai-m.mp4"
+      },
+      "office": {
+        "desktop": "assets/media/loops/office-d.mp4",
+        "mobile": "assets/media/loops/office-m.mp4"
+      },
+      "beach": {
+        "desktop": "assets/media/loops/beach-d.mp4",
+        "mobile": "assets/media/loops/beach-m.mp4"
+      }
     }
   },
   "transitions": [

@@ -76,10 +76,6 @@ const rooms = [
 // outside the rooms: the building we walk into, and the beach we walk out onto
 const scenes = {
   exterior: { still: 'assets/media/rooms/exterior', lqip: '', door: [50, 56.3, 2.9] },
-  // the walk in (Kling clip as frames). time: [scroll t, clip seconds] knots — the doors swing open
-  // between 2.5s and 3.75s, so that stretch gets almost half the scroll: scrolling slowly opens them.
-  enterSeq: { frames: 0, fps: 15, desktop: 'assets/media/sequences/enter/d/', mobile: 'assets/media/sequences/enter/m/',
-              time: [[0, 0], [0.35, 2.5], [0.8, 3.75], [1, 5.04]] },
   beach: { still: 'assets/media/rooms/beach', lqip: '' },
 };
 
@@ -89,10 +85,27 @@ const transitions = ['t1', 't2', 't3', 't4'].map(id => {
   return { id, frames, desktop: `assets/media/sequences/${id}/d/`, mobile: `assets/media/sequences/${id}/m/`, mobileCrop: 0.75 };
 });
 
-{
-  const dir = path.join(__dirname, '..', 'assets/media/sequences/enter/d');
-  scenes.enterSeq.frames = fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => f.endsWith('.webp')).length : 0;
+// Every walk is a real video (Kling O3) as frames, scrubbed by the scroll (tools/build-seqs.sh).
+// time: [scroll t, clip seconds] knots. The doors get the most scroll: slow scrolling opens them by hand.
+const SEQ_TIME = {
+  enter: [[0, 0], [0.35, 2.5], [0.8, 3.75], [1, 5.04]],   // doors swing open 2.5–3.75s
+  exit: [[0, 0], [0.3, 1.8], [0.75, 3.4], [1, 5.04]],     // office door opens 1.8–3.4s
+};
+const seqs = {};
+for (const id of ['enter', 't1', 't2', 't3', 't4', 'exit']) {
+  const dir = path.join(__dirname, '..', 'assets/media/sequences', id, 'd');
+  const frames = fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => f.endsWith('.webp')).length : 0;
+  if (frames) seqs[id] = { frames, fps: 15, desktop: `assets/media/sequences/${id}/d/`, mobile: `assets/media/sequences/${id}/m/`,
+    time: SEQ_TIME[id] || [[0, 0], [1, 5.04]] };
 }
+scenes.seqs = seqs;
+// living loops (tools/build-loops.sh): locked camera, drawn instead of the still while you stand there
+const loops = {};
+for (const id of ['exterior', 'studio', 'business', 'events', 'ai', 'office', 'beach']) {
+  if (fs.existsSync(path.join(__dirname, '..', `assets/media/loops/${id}-d.mp4`)))
+    loops[id] = { desktop: `assets/media/loops/${id}-d.mp4`, mobile: `assets/media/loops/${id}-m.mp4` };
+}
+scenes.loops = loops;
 for (const r of [...rooms, scenes.exterior, scenes.beach]) {
   const f = path.join(__dirname, '..', r.still + '-lqip.txt');
   if (fs.existsSync(f)) r.lqip = fs.readFileSync(f, 'utf8').trim();

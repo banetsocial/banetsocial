@@ -225,40 +225,69 @@
     return (sceneImg[name] = img);
   }
 
-  // the walk in through the front door: a real video (Kling) as frames, scrubbed by the scroll.
-  // ES.time maps scroll t → clip seconds; the doors open in the stretched middle part, so a slow
-  // scroll opens them by hand. Until the frames arrive the code-built zoom below stands in.
-  const ES = SC.enterSeq && SC.enterSeq.frames ? SC.enterSeq : null;
-  const enterFrames = [];
-  let enterLoading = false;
-  function loadEnter() {
-    if (!ES || enterLoading) return;
-    enterLoading = true;
-    const base = M ? ES.mobile : ES.desktop;
+  // Every walk (in through the front door, room to room through the arches, out to the beach) is a
+  // real video (Kling) as frames, scrubbed by the scroll. seq.time maps scroll t → clip seconds; the
+  // doors get the most scroll, so a slow scroll opens them by hand. Until a walk's frames arrive, the
+  // code-built camera move stands in.
+  const SEQ = SC.seqs || {};
+  const seqImgs = {};
+  function loadSeq(id) {
+    const q = SEQ[id];
+    if (!q || seqImgs[id]) return;
+    const imgs = seqImgs[id] = [], base = M ? q.mobile : q.desktop;
     // every 4th frame first (a rough walk is usable at once), then fill in the rest
     const order = [];
-    for (let step of [4, 2, 1]) for (let i = 0; i < ES.frames; i += step) if (!order.includes(i)) order.push(i);
+    for (const step of [4, 2, 1]) for (let i = 0; i < q.frames; i += step) if (!order.includes(i)) order.push(i);
     order.forEach(i => {
       const img = new Image(); img.decoding = 'async';
       img.onload = () => { img._ok = true; schedule(); };
-      img.src = `${base}${String(i + 1).padStart(4, '0')}.webp`;
-      enterFrames[i] = img;
+      img.src = base + String(i + 1).padStart(4, '0') + '.webp';
+      imgs[i] = img;
     });
   }
-  function enterFrame(t) {
-    const k = ES.time; let sec = k[k.length - 1][1];
+  function seqFrame(id, t) {
+    const q = SEQ[id], imgs = seqImgs[id];
+    if (!q || !imgs) return null;
+    const k = q.time; let sec = k[k.length - 1][1];
     for (let j = 1; j < k.length; j++) if (t <= k[j][0]) {
       const [t0, s0] = k[j - 1], [t1, s1] = k[j];
       sec = s0 + (s1 - s0) * (t - t0) / (t1 - t0); break;
     }
-    const want = Math.min(ES.frames - 1, Math.max(0, Math.round(sec * ES.fps)));
-    for (let d = 0; d < ES.frames; d++) {            // nearest frame that has arrived
-      const a = enterFrames[want - d], b = enterFrames[want + d];
+    const want = Math.min(q.frames - 1, Math.max(0, Math.round(sec * q.fps)));
+    for (let d = 0; d < q.frames; d++) {            // nearest frame that has arrived
+      const a = imgs[want - d], b = imgs[want + d];
       if (a && a._ok) return a;
       if (b && b._ok) return b;
     }
     return null;
   }
+  const transId = seg => 't' + (seg.from + 1);
+
+  // Living loops: the same view as the still, filmed with a locked camera (waves, flickering lights,
+  // drifting clouds). While you stand somewhere its loop is drawn instead of the still; only one plays.
+  const LOOPS = SC.loops || {};
+  const loopVid = {};
+  let liveLoop = null;
+  function useLoop(id) {
+    let v = null;
+    if (id && LOOPS[id]) {
+      v = loopVid[id];
+      if (!v) {
+        v = loopVid[id] = document.createElement('video');
+        Object.assign(v, { muted: true, loop: true, playsInline: true, preload: 'auto' });
+        v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+        v.addEventListener('loadeddata', () => schedule());
+        v.addEventListener('playing', () => schedule());
+        v.src = M ? LOOPS[id].mobile : LOOPS[id].desktop;
+      }
+    }
+    for (const k in loopVid) if (loopVid[k] !== v && !loopVid[k].paused) loopVid[k].pause();
+    if (v && v.paused) v.play().catch(() => {});
+    liveLoop = v && v.readyState >= 2 && !v.paused ? v : null;
+    return liveLoop;
+  }
+  // a frame the canvas can draw: a loaded image, or a loop that is playing
+  const drawable = img => !!img && (img._ok || (img.tagName === 'VIDEO' && img.readyState >= 2));
 
   /* ---------- canvas & cover mapping ---------- */
   const view = { w: 0, h: 0, s: 1, dx: 0, dy: 0, dpr: 1 };
@@ -284,11 +313,12 @@
   const roomX = i => i * STEP;
   // Phones see only a narrow upright slice of each (wide) room, so the side screens fall outside the
   // frame. There, resting in a room means looking around it: the view slides from one side to the other.
-  // The first room starts in the middle (where the walk-in lands), the last ends in the middle (its door).
+  // Every walk lands in the middle of a room and the next one leaves from the middle, so the look-around
+  // starts and ends there: middle → left wall → right wall → middle. The office (no screens) stays put.
   function panPath(i) {
     const hw = view.w / 2 / view.s, L = Math.min(hw, IW / 2), R = Math.max(IW - hw, IW / 2), C = IW / 2;
-    if (rooms[i].door && !rooms[i].next) return [L, C];
-    return i === 0 ? [C, L, R] : [L, R];
+    if (!rooms[i].next) return [C, C];
+    return [C, L, R, C];
   }
   function panX(i, t) {
     const P = panPath(i), n = P.length - 1, k = Math.min(Math.floor(t * n), n - 1), u = ease(t * n - k);
@@ -325,22 +355,26 @@
     screensLayer.append(L); return L;
   });
 
-  function draw(cam, opacity) {
+  // only >= 0: draw that room alone (the walks land on the room by itself, not blended with its
+  // neighbours); src: what to draw for it (its living loop) instead of the still
+  function draw(cam, opacity, only = -1, src = null) {
     const S = view.s * cam.z, halfW = view.w / 2 / S;
     ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
     ctx.fillStyle = '#061A22'; ctx.fillRect(0, 0, view.w, view.h);
     ctx.filter = cam.blur > 0.3 ? `blur(${cam.blur.toFixed(1)}px)` : 'none';
     const top = view.h / 2 - cam.y * S;
     rooms.forEach((_, i) => {
-      const x0 = roomX(i), inView = x0 < cam.x + halfW && x0 + IW > cam.x - halfW;
+      const x0 = roomX(i), inView = (only < 0 || only === i) && x0 < cam.x + halfW && x0 + IW > cam.x - halfW;
       const L = layers[i], o = inView ? (opacity[i] || 0) : 0;
       L.style.opacity = o; L.classList.toggle('vis', o > 0.01);
       if (!inView) return;
       const img = loadStill(i);
-      if (img && img._ok) {
-        // the next room's left edge fades so the two rooms melt together
-        const src = img._f && x0 > cam.x - halfW ? img._f : img;
+      if (only === i && drawable(src)) {
         ctx.drawImage(src, view.w / 2 + (x0 - cam.x) * S, top, IW * S, IH * S);
+      } else if (img && img._ok) {
+        // the next room's left edge fades so the two rooms melt together
+        const pic = only < 0 && img._f && x0 > cam.x - halfW ? img._f : img;
+        ctx.drawImage(pic, view.w / 2 + (x0 - cam.x) * S, top, IW * S, IH * S);
       }
       if (o > 0.01) {
         // same affine map as the canvas: room-relative layout → panorama → camera
@@ -354,7 +388,7 @@
 
   // one stand-alone image (outside, beach) with its own camera: centre cx, cy in image px, zoom z
   function paint(img, cx, cy, z, alpha = 1, blur = 0) {
-    if (!img || !img._ok || alpha <= 0.004) return false;
+    if (!drawable(img) || alpha <= 0.004) return false;
     const S = view.s * z, hw = view.w / 2 / S, hh = view.h / 2 / S;
     cx = Math.min(Math.max(cx, hw), IW - hw); cy = Math.min(Math.max(cy, hh), IH - hh);
     ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
@@ -365,7 +399,7 @@
   }
   function clearStage(img) {
     ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
-    if (img && img._ok) { ctx.fillStyle = '#061A22'; ctx.fillRect(0, 0, view.w, view.h); }
+    if (drawable(img)) { ctx.fillStyle = '#061A22'; ctx.fillRect(0, 0, view.w, view.h); }
     else ctx.clearRect(0, 0, view.w, view.h);          // not loaded yet: the blurred preview behind shows
   }
   function hideLayers() { layers.forEach(L => { L.style.opacity = 0; L.classList.remove('vis'); }); }
@@ -532,9 +566,10 @@
     stage.classList.toggle('outside', !!SC.exterior && pRaw < INTRO + DOOR * 0.4);
     if (pRaw >= total && segs[segs.length - 1].type === 'exit') {
       // on the beach: keep walking slowly toward the sea while the panels pass by
-      const beach = loadScene('beach'), q = Math.min((pRaw - total) / 4, 1);
+      const beach = useLoop('beach') || loadScene('beach'), q = Math.min((pRaw - total) / 4, 1);
       clearStage(beach); paint(beach, IW / 2, IH / 2, 1 + 0.08 * q);
       hideLayers(); setUI(-1); setVideoRoom(-1);
+      if (liveLoop) schedule();
       return;
     }
     const p = Math.min(pRaw, total - 0.0001);
@@ -543,41 +578,70 @@
     current.seg = seg; current.t = t;
 
     if (seg.type === 'intro') {
-      const ext = loadScene('exterior');
+      const ext = useLoop('exterior') || loadScene('exterior');
       clearStage(ext); paint(ext, IW / 2, IH / 2, 1 + REST_ZOOM * t);
       hideLayers(); setUI(0); setVideoRoom(-1);
-      loadStill(0); loadEnter();
-    } else if (seg.type === 'enter' && ES && enterFrame(t)) {
+      loadStill(0); loadSeq('enter');
+    } else if (seg.type === 'enter' && seqFrame('enter', t)) {
       // the clip starts on the exterior still; carry over the small creep-in of the intro and let it go
-      const img = enterFrame(t), z = 1 + REST_ZOOM * (1 - ease(band(t, 0, 0.35)));
-      clearStage(img); paint(img, IW / 2, IH / 2, z);
+      const img = seqFrame('enter', t), z = 1 + REST_ZOOM * (1 - ease(band(t, 0, 0.35)));
+      useLoop(null); clearStage(img); paint(img, IW / 2, IH / 2, z);
       hideLayers(); setUI(-1); setVideoRoom(t > 0.8 ? 0 : -1);
-      loadStill(1);
+      loadStill(1); loadSeq('t1');
     } else if (seg.type === 'enter') {
-      loadEnter();
+      loadSeq('enter'); useLoop(null);
       const ext = loadScene('exterior'), a = crossfade(t), c = doorCam(SC.exterior.door, band(t, 0, 0.85));
       if (a > 0.004) draw(clampCam({ x: roomX(0) + IW / 2, y: IH / 2, z: arriveZoom(t), blur: c.blur * 0.6 }), { 0: a });
       else { clearStage(ext); hideLayers(); }
       paint(ext, c.cx, c.cy, c.z, 1 - a, c.blur);
       setUI(-1); setVideoRoom(t > 0.5 ? 0 : -1);
       loadStill(1);
+    } else if (seg.type === 'exit' && seqFrame('exit', t)) {
+      // out through the office door: start where the room's camera left off, settle into the clip
+      walk(seqFrame('exit', t), LAST, t);
+      setVideoRoom(-1); loadScene('beach'); useLoop(null);
     } else if (seg.type === 'exit') {
+      loadSeq('exit'); useLoop(null);
       const room = rooms[LAST], a = crossfade(t), c = doorCam(room.door, band(t, 0, 0.85));
       draw(clampCam({ x: roomX(LAST) + c.cx, y: c.cy, z: c.z, blur: c.blur }), {});
       paint(loadScene('beach'), IW / 2, IH / 2, arriveZoom(t), a);
       setUI(-1); setVideoRoom(-1);
     } else if (seg.type === 'rest') {
-      draw(clampCam(restCam(seg.room, t)), { [seg.room]: 1 });
+      // the room by itself, alive (its loop), the screens fading in as the walk settles
+      const live = useLoop(rooms[seg.room].id), solo = !!SEQ.t1;
+      draw(clampCam(restCam(seg.room, t)), { [seg.room]: solo ? ease(band(t, 0, 0.1)) : 1 }, solo ? seg.room : -1, live);
       setVideoRoom(seg.room); setUI(seg.room);
       loadStill(seg.room + 1);
+      loadSeq(seg.room === LAST ? 'exit' : 't' + (seg.room + 1));
       if (seg.room === LAST) loadScene('beach');
+    } else if (seqFrame(transId(seg), t)) {
+      // through the arch into the next room: the real walk, scrubbed by the scroll
+      walk(seqFrame(transId(seg), t), seg.from, t, true);
+      useLoop(null); setVideoRoom(t > 0.85 ? seg.to : -1);
+      loadStill(seg.to + 1); loadSeq(seg.to === LAST ? 'exit' : 't' + (seg.to + 1));
     } else {
+      loadSeq(transId(seg)); useLoop(null);
       const cam = clampCam(transCam(seg, t));
       // screens of the room we leave fade out as we turn away; the next room's fade in as it arrives
       draw(cam, { [seg.from]: 1 - band(cam.p, 0.2, 0.55), [seg.to]: band(cam.p, 0.45, 0.8) });
       setUI(-1); setVideoRoom(cam.p < 0.5 ? seg.from : seg.to);
       loadStill(seg.to + 1);
     }
+    if (liveLoop) schedule();          // a living loop on screen: keep painting its frames
+  }
+  // one frame of a walk, starting from where the room's camera was (phone look-around, desktop
+  // creep-in) and settling into the clip's own framing within the first steps
+  // toArch: the arches are on the right-hand wall. A phone in portrait sees only the middle of the
+  // clip, so there the view turns toward the arch while walking up to it and back to the middle
+  // as the next room opens up.
+  function walk(img, from, t, toArch = false) {
+    const r = restCam(from, 1), u = ease(band(t, 0, 0.3));
+    let cx = r.x - roomX(from);
+    cx += (IW / 2 - cx) * u;
+    if (toArch && M && view.w < view.h) cx += (IW - IW / 2) * Math.sin(Math.PI * ease(band(t, 0.05, 0.9)));
+    clearStage(img);
+    paint(img, cx, r.y + (IH / 2 - r.y) * u, r.z + (1 - r.z) * u);
+    hideLayers(); setUI(-1);
   }
 
   addEventListener('scroll', schedule, { passive: true });
