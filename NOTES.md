@@ -204,3 +204,10 @@
 - סה"כ 115 (מתוך 140 שאושרו). קבצים: `assets/media/transitions/v2/enter-*.mp4`, השוואה: `review/enter-compare.mp4`.
 - התרשמות: בשניהם יש הליכה רציפה, הלוגו נשמר והסוף נוחת על הסטודיו. ב־Kling הדלתות נפתחות כבר באמצע ההליכה (דלת "שנפתחת לפי הגלילה"); ב־FLUX הן נפתחות מאוחר, ממש לפני הכניסה.
 - המלצה: Kling O3 לשאר (5 מעברים + 7 לולאות, בערך 840).
+
+## כניסה אמיתית בגלילה (Kling) — חי באתר
+- Yossi chose **Kling O3** for all the transitions (comparison in review/enter-compare.mp4).
+- The entrance clip `transitions/v2/enter-kling.mp4` became 76 frames (15fps) in `assets/media/sequences/enter/{d,m}` (build: `bash tools/build-enter.sh`). The last 5 frames blend into the studio still, so there is no seam.
+- The scroll maps to clip time in `scenes.enterSeq.time` (tools/build-rooms-json.js): 0–35% of the scroll covers the walk to the door (0–2.5s), **35–80% covers the door opening (2.5–3.75s)**, and 80–100% covers stepping into the studio. Slow scrolling = opening the door by hand.
+- Frames load every 4th one first, then fill in. Until they arrive, the old code zoom stands in.
+- No credits spent in this step. Balance 1,100.3. Next (awaiting approval): 4 arch walks + office door to the beach + 7 living loops = 12 × 70 = 840.

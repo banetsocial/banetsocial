@@ -211,6 +211,41 @@
     return (sceneImg[name] = img);
   }
 
+  // the walk in through the front door: a real video (Kling) as frames, scrubbed by the scroll.
+  // ES.time maps scroll t → clip seconds; the doors open in the stretched middle part, so a slow
+  // scroll opens them by hand. Until the frames arrive the code-built zoom below stands in.
+  const ES = SC.enterSeq && SC.enterSeq.frames ? SC.enterSeq : null;
+  const enterFrames = [];
+  let enterLoading = false;
+  function loadEnter() {
+    if (!ES || enterLoading) return;
+    enterLoading = true;
+    const base = M ? ES.mobile : ES.desktop;
+    // every 4th frame first (a rough walk is usable at once), then fill in the rest
+    const order = [];
+    for (let step of [4, 2, 1]) for (let i = 0; i < ES.frames; i += step) if (!order.includes(i)) order.push(i);
+    order.forEach(i => {
+      const img = new Image(); img.decoding = 'async';
+      img.onload = () => { img._ok = true; schedule(); };
+      img.src = `${base}${String(i + 1).padStart(4, '0')}.webp`;
+      enterFrames[i] = img;
+    });
+  }
+  function enterFrame(t) {
+    const k = ES.time; let sec = k[k.length - 1][1];
+    for (let j = 1; j < k.length; j++) if (t <= k[j][0]) {
+      const [t0, s0] = k[j - 1], [t1, s1] = k[j];
+      sec = s0 + (s1 - s0) * (t - t0) / (t1 - t0); break;
+    }
+    const want = Math.min(ES.frames - 1, Math.max(0, Math.round(sec * ES.fps)));
+    for (let d = 0; d < ES.frames; d++) {            // nearest frame that has arrived
+      const a = enterFrames[want - d], b = enterFrames[want + d];
+      if (a && a._ok) return a;
+      if (b && b._ok) return b;
+    }
+    return null;
+  }
+
   /* ---------- canvas & cover mapping ---------- */
   const view = { w: 0, h: 0, s: 1, dx: 0, dy: 0, dpr: 1 };
   function resize() {
@@ -485,8 +520,15 @@
       const ext = loadScene('exterior');
       clearStage(ext); paint(ext, IW / 2, IH / 2, 1 + REST_ZOOM * t);
       hideLayers(); setUI(0); setVideoRoom(-1);
-      loadStill(0);
+      loadStill(0); loadEnter();
+    } else if (seg.type === 'enter' && ES && enterFrame(t)) {
+      // the clip starts on the exterior still; carry over the small creep-in of the intro and let it go
+      const img = enterFrame(t), z = 1 + REST_ZOOM * (1 - ease(band(t, 0, 0.35)));
+      clearStage(img); paint(img, IW / 2, IH / 2, z);
+      hideLayers(); setUI(-1); setVideoRoom(t > 0.8 ? 0 : -1);
+      loadStill(1);
     } else if (seg.type === 'enter') {
+      loadEnter();
       const ext = loadScene('exterior'), a = crossfade(t), c = doorCam(SC.exterior.door, band(t, 0, 0.85));
       if (a > 0.004) draw(clampCam({ x: roomX(0) + IW / 2, y: IH / 2, z: arriveZoom(t), blur: c.blur * 0.6 }), { 0: a });
       else { clearStage(ext); hideLayers(); }

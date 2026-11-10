@@ -76,6 +76,10 @@ const rooms = [
 // outside the rooms: the building we walk into, and the beach we walk out onto
 const scenes = {
   exterior: { still: 'assets/media/rooms/exterior', lqip: '', door: [50, 56.3, 2.9] },
+  // the walk in (Kling clip as frames). time: [scroll t, clip seconds] knots — the doors swing open
+  // between 2.5s and 3.75s, so that stretch gets almost half the scroll: scrolling slowly opens them.
+  enterSeq: { frames: 0, fps: 15, desktop: 'assets/media/sequences/enter/d/', mobile: 'assets/media/sequences/enter/m/',
+              time: [[0, 0], [0.35, 2.5], [0.8, 3.75], [1, 5.04]] },
   beach: { still: 'assets/media/rooms/beach', lqip: '' },
 };
 
@@ -85,7 +89,11 @@ const transitions = ['t1', 't2', 't3', 't4'].map(id => {
   return { id, frames, desktop: `assets/media/sequences/${id}/d/`, mobile: `assets/media/sequences/${id}/m/`, mobileCrop: 0.75 };
 });
 
-for (const r of [...rooms, ...Object.values(scenes)]) {
+{
+  const dir = path.join(__dirname, '..', 'assets/media/sequences/enter/d');
+  scenes.enterSeq.frames = fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => f.endsWith('.webp')).length : 0;
+}
+for (const r of [...rooms, scenes.exterior, scenes.beach]) {
   const f = path.join(__dirname, '..', r.still + '-lqip.txt');
   if (fs.existsSync(f)) r.lqip = fs.readFileSync(f, 'utf8').trim();
 }

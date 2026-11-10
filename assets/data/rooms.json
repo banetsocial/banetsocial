@@ -687,6 +687,30 @@
         2.9
       ]
     },
+    "enterSeq": {
+      "frames": 76,
+      "fps": 15,
+      "desktop": "assets/media/sequences/enter/d/",
+      "mobile": "assets/media/sequences/enter/m/",
+      "time": [
+        [
+          0,
+          0
+        ],
+        [
+          0.35,
+          2.5
+        ],
+        [
+          0.8,
+          3.75
+        ],
+        [
+          1,
+          5.04
+        ]
+      ]
+    },
     "beach": {
       "still": "assets/media/rooms/beach",
       "lqip": "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAACwBACdASoYAA4APtFUo0uoJKMhsAgBABoJagCdMoRwACWivgLH9PT0vncsUo6AAP32niu4Wi8ym7bu9fVkCiMRwSuE0uDLKuZ6f/7zWjpoNSPP6jvSVdoCGgrwyPkLoKr+ZMqUsHQoSSjkxV4icPbBFuDcPXes2Sct99/ZABHpdA8IM7tJlK2AAAA="
