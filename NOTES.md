@@ -311,3 +311,4 @@ Done in m.html (0 credits):
 - Three jump buttons in the hero + sticky tabs (business / events / AI / prices), current section lit.
 - "Featured" row removed, so every work appears once. The showreel (perfume ad) opens the business row.
 - Not done, waiting for Yossi: removing prices; white theme. Both are business/brand calls.
+- 2026-11-10, Yossi's decision: price list removed from the phone page (m.html). Fourth tab is now "contact". Desktop site unchanged.
