@@ -263,3 +263,6 @@
 - Deploy: an artifact of ~1850 files timed out once in `syncing_files` (10 min); the second push went through. `loops/src` is no longer uploaded.
 - Local QA: PASS (0 spikes / 0 blank / 0 errors). On the live site, on a first visit with fast scrolling, the sweep sees "stuck and then jumps" on the phone — frames that haven't finished downloading (the phone frames are now 1280). To be examined.
 - **Limitation:** in t2/t4 Part A is a digital zoom on a still frame (no parallax). The full solution = 8 new Kling clips (560 Standard / 720 Pro). Balance 30.3.
+- **Frame loading (b1110q):** the frames download through an ordered queue (8 in parallel; the walk on screen first; within a walk every 4th frame → every 2nd → the rest), a frame that failed is retried (up to 3 times). Until everything has arrived `seqFrame` blends between the nearest frames that did arrive (before/after) instead of "stuck and jumps". `window.__journeyLoad = {want, got}` — sweep.mjs waits on it (up to 4 min) before measuring.
+- The "failures" in the live sweep were mostly `ERR_CERT_VERIFIER_CHANGED` of headless Chrome with a fresh profile + a slow line (~1MB/s) — not a site bug, but until now there was no retry at all.
+- Deploy: the deployment ID = the commit SHA. After a timeout, **a new commit and push** (a `workflow run` on the same SHA got stuck again).
