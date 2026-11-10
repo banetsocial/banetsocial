@@ -13,6 +13,13 @@ const roomsData = read('assets/data/rooms.json');
 // Optional media base (e.g. a CDN for full.mp4). Empty = same folder as the site.
 const MEDIA_BASE = process.env.MEDIA_BASE || '';
 for (const w of works) if (MEDIA_BASE) w.full = MEDIA_BASE.replace(/\/$/, '') + '/' + w.full;
+// Full videos hosted on the Kolbo CDN (assets/data/media-cdn.json: local path → URL), so the
+// Pages upload stays small. Anything not in the map is served from the site as before.
+{
+  const cdnFile = path.join(ROOT, 'assets/data/media-cdn.json');
+  const cdn = fs.existsSync(cdnFile) ? JSON.parse(fs.readFileSync(cdnFile, 'utf8')) : {};
+  for (const w of works) if (cdn[w.full]) w.full = cdn[w.full];
+}
 
 const CATS = {
   studio: 'צילומי אווירה ומאחורי הקלעים',

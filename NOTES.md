@@ -211,3 +211,9 @@
 - The scroll maps to clip time in `scenes.enterSeq.time` (tools/build-rooms-json.js): 0–35% of the scroll covers the walk to the door (0–2.5s), **35–80% covers the door opening (2.5–3.75s)**, and 80–100% covers stepping into the studio. Slow scrolling = opening the door by hand.
 - Frames load every 4th one first, then fill in. Until they arrive, the old code zoom stands in.
 - No credits spent in this step. Balance 1,100.3. Next (awaiting approval): 4 arch walks + office door to the beach + 7 living loops = 12 × 70 = 840.
+
+## Full videos on the Kolbo CDN (fixes the deploy timeout)
+- All 34 `works/*/full.mp4` files (643MB) were uploaded to the Kolbo project 6af06a083b4353e28ac83ba7. The upload was free: the balance stayed 1,100.3.
+- Map: `assets/data/media-cdn.json` (local path → URL). `tools/build-site-data.js` swaps `full` for the CDN URL. The workflow deletes those files from `_site` before upload. Every link was checked: 200, identical size, range requests supported.
+- The local copies stay in git as a backup. A new video only needs `node <scratchpad>/upload-full.js <token>` (resumable) or a manual entry in the map.
+- Also: `stills/` and `transitions/` are not uploaded to Pages (the page never loads them).
