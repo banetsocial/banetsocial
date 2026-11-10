@@ -281,3 +281,18 @@ Proposed (waiting for credits + approval): (1) edit each room still so its arch 
 next-room still (~5 credits each, gpt-image-2.5-sunburst/edit); (2) regenerate walks as Kling
 first→last clips: pan toward the arch + walk through, motion blur (70 credits Standard 720p 5s);
 (3) pillar wipe as a fallback join; (4) prove on ONE walk first (~75 credits). Balance: 30.3.
+
+## Round 7 — phone landing page (2026-11-10)
+
+Feedback from people who saw the site: "amazing, but it does not convert" and "show me the phone, most visitors come from there". Decision with Yossi: the desktop journey stays as it is for now; phones get a light landing page. The walk regeneration (Round 6 plan) is postponed.
+
+- **`m.html`** (root, self-contained CSS + small inline script; reads works from `assets/data/site-data.js`):
+  hero (exterior still + `exterior-m` loop, headline "סרטונים שמביאים לכם לקוחות.", three proof chips, WhatsApp button) → "עבודות נבחרות" row of six → three room sections (business / events / AI: room still + tiny loop as a band, a sideways row of 9:16 cards, a WhatsApp button with a ready message for that kind of job) → prices (each with "מעניין אותי" that opens WhatsApp with the package named) → process → about → final CTA + call link + link to the full tour.
+  A bar with WhatsApp + phone stays at the bottom once the first button has scrolled away.
+- Cards: blurred placeholder → poster when near the screen → the 7 s preview plays only while the card is >60% visible. Tap opens the full video (Kolbo CDN) in a `<dialog>` with "אני רוצה סרטון כזה" (WhatsApp message names the work). Save-Data / reduced motion: stills only.
+- **Redirect:** `index.html` sends screens under 768px to `m.html` (script right after the viewport meta — before it, phones still report a 980px layout and the check fails). `index.html?full=1` skips the redirect; the landing links to it. QA on the journey must use that URL: `bash tools/qa/run-all.sh "http://localhost:5173/index.html?full=1"` (PASS, 0 spikes on desktop and mobile).
+- Deploy workflow copies `m.html` too.
+- **New work:** `aron-kodesh` (business, "ארון קודש בעבודת יד", Drive IMG_8603, uploaded 2026-11-10). Full video on the Kolbo CDN (free upload, balance stayed 30.3). 35 works now. The client name is not known — ask Yossi.
+- Other files uploaded to Drive on 2026-11-10 and looked at, not added: IMG_8451 (ועידת הגבאים conference, a good candidate for events), IMG_8706 (drive to the Bichler tower), IMG_9252 (Bichler, we already have one), IMG_9260 (לערנען outdoor day), IMG_8833 (Karlin fundraising, we already have four Karlin videos).
+- **Testimonials:** Yossi asked for invented WhatsApp screenshots. Not done: fake reviews shown as real mislead customers and invented phone numbers can belong to real people. The page shows the two real results we have (Itamar Shalom, Karlin) on their cards. Needed from Yossi: 3–4 real client messages (screenshots), then a "מה אומרים" section goes in.
+- No analytics yet (needs an account). Kolbo credits spent this round: 0.

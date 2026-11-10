@@ -533,6 +533,20 @@
       "preview": "assets/media/works/showreel/preview.mp4",
       "full": "assets/media/works/showreel/full.mp4",
       "lqip": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADQAwCdASoMABYAPu1iqk2ppaQiMAgBMB2JQBYfv/wHkc03P7IKn0AA/vEotO5T50QFe4NoR1V6I6E6VtcfxJvvQhSqXB0ehjHheVpTDwRoqrA5ohbTAAAA"
+    },
+    {
+      "id": "aron-kodesh",
+      "category": "business",
+      "title": "ארון קודש בעבודת יד",
+      "client": "תיעוד נגרות",
+      "pitch": "",
+      "stat": "",
+      "featured": false,
+      "wall": [],
+      "poster": "assets/media/works/aron-kodesh/poster.webp",
+      "preview": "assets/media/works/aron-kodesh/preview.mp4",
+      "full": "assets/media/works/aron-kodesh/full.mp4",
+      "lqip": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAwBACdASoMABYAPu1iqU2ppaOiMAgBMB2JYgCdEf/gOc3tHI1H8JnBvsAA/jMVwU3E/RdggKkHVY70q0+/QnFRUB/B8W/EQJylt+8ZudK4zMAkrqI6E6VgZDiTfh/LlkRKK+lGAh3QzRngtzPAAA=="
     }
   ]
 }

@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>בנט סושיאל | סרטונים שמביאים לקוחות</title>
+<meta name="description" content="יוסי בנט, עורך וידאו ויוצר תוכן AI. רילס לעסקים, תיעוד אירועים והפקות AI. עבודות, מחירון ושליחת הודעה בוואטסאפ.">
+<link rel="canonical" href="https://banetsocial.github.io/banetsocial/">
+<meta name="theme-color" content="#061A22">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:title" content="בנט סושיאל | סרטונים שמביאים לקוחות">
+<meta property="og:description" content="רילס לעסקים, תיעוד אירועים והפקות AI.">
+<meta property="og:image" content="https://banetsocial.github.io/banetsocial/assets/media/brand/og.jpg">
+<link rel="icon" href="assets/media/brand/favicon.png" type="image/png">
+<link rel="preload" as="image" href="assets/media/rooms/exterior-720.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Banet Social — the light page for phones. Same house, same colours as the journey, but nothing to wait for:
+   stills + tiny loops for the rooms, short previews for the works, WhatsApp always one thumb away. */
+:root {
+  --bg: #061A22; --surface: #0B2A35; --surface-2: #10394A; --line: #1F5866;
+  --text: #D8F3F7; --dim: #8FC3CC; --accent: #2EC4D6; --accent-ink: #04161C; --warm: #F2A65A; --wa: #25D366;
+  --font-display: "Rubik", "Heebo", system-ui, sans-serif; --font-text: "Heebo", system-ui, sans-serif;
+  --g: 18px; --glow: 0 0 0 1px rgba(46,196,214,.55), 0 0 18px rgba(46,196,214,.35);
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 400 1.0625rem/1.6 var(--font-text); overflow-x: hidden;
+  padding-block-end: calc(76px + env(safe-area-inset-bottom)); }
+img, video { display: block; max-inline-size: 100%; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1.12; color: #fff; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(2.1rem, 9.5vw, 3.2rem); letter-spacing: -.01em; }
+h2 { font-size: clamp(1.6rem, 7vw, 2.3rem); }
+h3 { font-size: 1.15rem; }
+p { margin: 0; }
+.wrap { max-inline-size: 560px; margin-inline: auto; }
+.pad { padding-inline: var(--g); }
+
+/* buttons */
+.btn { display: flex; align-items: center; justify-content: center; gap: 10px; min-block-size: 54px; padding: 12px 20px;
+  border-radius: 14px; font-weight: 700; font-size: 1.1rem; text-decoration: none; border: 0; cursor: pointer; }
+.btn svg { flex: none; }
+.btn-wa { background: var(--wa); color: #04210f; box-shadow: 0 8px 26px rgba(37,211,102,.35); }
+.btn-ghost { background: rgba(6,26,34,.55); color: #fff; border: 1px solid rgba(216,243,247,.35); backdrop-filter: blur(6px); }
+.btn-line { background: none; color: var(--accent); border: 1px solid var(--line); min-block-size: 48px; font-size: 1rem; }
+
+/* hero */
+.hero { position: relative; min-block-size: 100svh; display: flex; flex-direction: column; justify-content: flex-end; isolation: isolate; }
+.hero-bg { position: absolute; inset: 0; z-index: -2; background: #061A22 url(assets/media/rooms/exterior-720.webp) center / cover no-repeat; }
+.hero-bg video { inline-size: 100%; block-size: 100%; object-fit: cover; }
+.hero::after { content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(rgba(4,16,21,.55), rgba(4,16,21,0) 22%, rgba(4,16,21,.1) 42%, rgba(4,16,21,.92) 72%, #061A22); }
+.hero-top { position: absolute; inset-block-start: max(14px, env(safe-area-inset-top)); inset-inline: var(--g); display: flex; align-items: center; gap: 10px; }
+.hero-top img { inline-size: 44px; block-size: auto; }
+.hero-top b { font-family: var(--font-display); color: #fff; font-size: 1.05rem; }
+.hero-body { padding: 0 var(--g) 26px; display: grid; gap: 14px; }
+.hero-body .sub { font-size: 1.15rem; color: var(--text); max-inline-size: 30ch; }
+.proof { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 2px 0 4px; list-style: none; }
+.proof li { padding: 5px 12px; border-radius: 999px; border: 1px solid rgba(46,196,214,.45); background: rgba(6,26,34,.6); font-size: .9rem; color: #fff; }
+.hero-cta { display: grid; gap: 10px; }
+.micro { font-size: .9rem; color: var(--dim); text-align: center; }
+
+/* sections */
+section { padding-block: 44px 8px; }
+.sec-head { display: grid; gap: 6px; margin-block-end: 18px; }
+.sec-head p { color: var(--dim); }
+.eyebrow { font-size: .85rem; letter-spacing: .08em; color: var(--accent); font-weight: 700; }
+
+/* a room of the house as a section header */
+.room { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #0B2A35 center / cover no-repeat; isolation: isolate; }
+.room video { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; z-index: -2; }
+.room::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(rgba(6,26,34,.15), rgba(6,26,34,.1) 40%, rgba(6,26,34,.95)); }
+.room-text { position: absolute; inset-inline: var(--g); inset-block-end: 12px; display: grid; gap: 4px; }
+.room-text p { color: var(--text); }
+.cat { padding-block: 0 8px; }
+.cat .btn { margin: 16px var(--g) 0; }
+
+/* rows of works: swipe sideways, each card is a phone-shaped video */
+.row { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 16px var(--g) 6px; scroll-padding-inline: var(--g);
+  scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.row::-webkit-scrollbar { display: none; }
+.card { flex: none; inline-size: 62vw; max-inline-size: 270px; scroll-snap-align: start; padding: 0; border: 0; background: none; text-align: start; cursor: pointer; }
+.thumb { position: relative; aspect-ratio: 9 / 16; border-radius: 14px; overflow: hidden; background: #000 center / cover no-repeat; box-shadow: var(--glow); }
+.thumb video { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; opacity: 0; transition: opacity .35s; }
+.thumb video.on { opacity: 1; }
+.thumb::after { content: ""; position: absolute; inset: auto 0 0 0; block-size: 45%; background: linear-gradient(transparent, rgba(2,10,14,.88)); }
+.play { position: absolute; z-index: 1; inset-block-start: 10px; inset-inline-start: 10px; inline-size: 38px; block-size: 38px; border-radius: 50%;
+  background: rgba(6,26,34,.7); border: 1px solid rgba(255,255,255,.5); display: grid; place-items: center; }
+.play::before { content: ""; border-inline-start: 11px solid #fff; border-block: 7px solid transparent; margin-inline-start: 3px; }
+[dir="rtl"] .play::before { transform: scaleX(-1); margin-inline-start: 0; margin-inline-end: 3px; }
+.cap { position: absolute; z-index: 1; inset: auto 12px 10px 12px; display: grid; gap: 1px; }
+.cap b { color: #fff; font-family: var(--font-display); font-size: 1.05rem; line-height: 1.2; }
+.cap small { color: var(--dim); font-size: .85rem; }
+.cap em { font-style: normal; color: var(--warm); font-size: .82rem; line-height: 1.3; margin-block-start: 3px; }
+.hint { padding-inline: var(--g); font-size: .85rem; color: var(--dim); }
+
+/* panels */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+.stack { display: grid; gap: 12px; }
+.price h3 { margin-block-end: 4px; }
+.amount { font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; color: var(--warm); margin-block-end: 4px; }
+.amount s { font-size: .95rem; color: var(--dim); font-weight: 500; }
+.price p:not(.amount) { color: var(--dim); font-size: .98rem; }
+.price .btn { margin-block-start: 14px; }
+.price.best { border-color: var(--accent); box-shadow: var(--glow); }
+.tag { display: inline-block; margin-block-end: 8px; padding: 2px 10px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: .8rem; font-weight: 700; }
+.terms { margin: 14px 0 0; padding-inline-start: 1.1em; color: var(--dim); font-size: .92rem; display: grid; gap: 4px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.steps li { display: flex; align-items: center; gap: 12px; }
+.steps span { flex: none; inline-size: 34px; block-size: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); border: 1px solid var(--accent); color: #fff; font-weight: 700; }
+blockquote { margin: 0 0 10px; font-family: var(--font-display); font-size: 1.3rem; color: #fff; line-height: 1.3; }
+.about p { color: var(--text); }
+.about .gear { color: var(--dim); font-size: .92rem; margin-block-start: 8px; }
+.final { text-align: center; display: grid; gap: 14px; padding-block: 44px 30px; }
+.final p { color: var(--dim); }
+.tour { display: block; text-align: center; margin: 6px auto 0; font-size: .95rem; }
+footer { text-align: center; color: var(--dim); font-size: .9rem; padding: 22px var(--g) 28px; border-block-start: 1px solid var(--line); }
+
+/* the bar that stays under the thumb */
+.bar { position: fixed; z-index: 30; inset: auto 0 0 0; display: flex; gap: 10px; padding: 10px var(--g) calc(10px + env(safe-area-inset-bottom));
+  background: rgba(6,26,34,.92); backdrop-filter: blur(10px); border-block-start: 1px solid var(--line);
+  transform: translateY(110%); transition: transform .3s; }
+.bar.show { transform: none; }
+.bar .btn { min-block-size: 50px; }
+.bar .btn-wa { flex: 1; }
+.bar .btn-call { flex: none; inline-size: 54px; padding: 0; background: var(--surface-2); color: #fff; border: 1px solid var(--line); }
+
+/* player */
+dialog { color: var(--text); padding: 0; border: 0; background: transparent; max-inline-size: 100vw; max-block-size: 100dvh; inline-size: 100vw; }
+dialog::backdrop { background: rgba(2,10,14,.94); }
+.p-in { display: grid; gap: 10px; justify-items: center; padding: 10px var(--g); }
+.p-in video { max-block-size: calc(100dvh - 170px); max-inline-size: 100%; aspect-ratio: 9 / 16; background: #000; border-radius: 12px; }
+.p-in .btn { inline-size: min(100%, 420px); }
+.p-cap { text-align: center; color: var(--dim); font-size: .95rem; }
+.x { position: fixed; z-index: 2; inset-block-start: max(10px, env(safe-area-inset-top)); inset-inline-end: 10px; inline-size: 44px; block-size: 44px;
+  border-radius: 50%; border: 1px solid var(--line); background: var(--surface); font-size: 26px; line-height: 1; cursor: pointer; }
+
+@media (min-width: 700px) { .card { inline-size: 240px; } .room { aspect-ratio: 16 / 7; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .bar, .thumb video { transition: none; } }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-bg"><video id="hero-v" muted loop playsinline preload="none" poster="assets/media/rooms/exterior-720.webp" aria-hidden="true"></video></div>
+  <div class="hero-top"><img src="assets/media/brand/logo-mark-240.png" alt="" width="237" height="240"><b>בנט סושיאל</b></div>
+  <div class="hero-body wrap">
+    <h1>סרטונים שמביאים לכם לקוחות.</h1>
+    <p class="sub">רילס לעסקים, תיעוד אירועים והפקות AI. מהרעיון ועד הקובץ המוכן.</p>
+    <ul class="proof">
+      <li>עשרות לקוחות</li>
+      <li>יותר משנתיים בסושיאל</li>
+      <li>מסירה עד 5 ימי עסקים</li>
+    </ul>
+    <div class="hero-cta">
+      <a class="btn btn-wa" data-wa="היי יוסי, הגעתי מהאתר ואני רוצה סרטון. מה שאני צריך: " target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><use href="#wa"/></svg>שלחו לי הודעה בוואטסאפ</a>
+      <a class="btn btn-ghost" href="#works">לראות עבודות</a>
+    </div>
+    <p class="micro">כותבים בשתי שורות מה אתם צריכים, ומשם ממשיכים.</p>
+  </div>
+</header>
+
+<main>
+  <section id="works" aria-labelledby="works-t">
+    <div class="sec-head pad wrap">
+      <span class="eyebrow">עבודות נבחרות</span>
+      <h2 id="works-t">קודם כול, תראו.</h2>
+      <p>נגיעה על סרטון פותחת אותו במסך מלא, עם סאונד.</p>
+    </div>
+    <div class="row" data-row="featured"></div>
+    <p class="hint">החליקו הצידה לעוד ←</p>
+  </section>
+
+  <section class="cat" id="business" aria-labelledby="biz-t">
+    <div class="room" data-room="business"><div class="room-text"><h2 id="biz-t">סרטונים לעסק</h2><p>רילס לעסקים, נדל״ן ובתי קפה. מצולמים אצלכם, ערוכים עד הפריים האחרון.</p></div></div>
+    <div class="row" data-row="business"></div>
+    <a class="btn btn-wa" data-wa="היי יוסי, מעניין אותי סרטון לעסק שלי" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><use href="#wa"/></svg>אני רוצה סרטון לעסק</a>
+  </section>
+
+  <section class="cat" id="events" aria-labelledby="ev-t">
+    <div class="room" data-room="events"><div class="room-text"><h2 id="ev-t">אירועים ומוזיקה</h2><p>הרגעים שלא חוזרים: אירועים, תזמורות, פסטיבלים ומוזיקה חיה.</p></div></div>
+    <div class="row" data-row="events"></div>
+    <a class="btn btn-wa" data-wa="היי יוסי, יש לי אירוע ואני רוצה תיעוד וידאו" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><use href="#wa"/></svg>יש לי אירוע</a>
+  </section>
+
+  <section class="cat" id="ai" aria-labelledby="ai-t">
+    <div class="room" data-room="ai"><div class="room-text"><h2 id="ai-t">הפקות AI</h2><p>מה שאי אפשר לצלם, אפשר לייצר. מהתסריט ועד הסאונד.</p></div></div>
+    <div class="row" data-row="ai"></div>
+    <a class="btn btn-wa" data-wa="היי יוסי, מעניינת אותי הפקת AI" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><use href="#wa"/></svg>אני רוצה הפקת AI</a>
+  </section>
+
+  <section class="pad wrap" id="prices" aria-labelledby="pr-t">
+    <div class="sec-head">
+      <span class="eyebrow">מחירון</span>
+      <h2 id="pr-t">כמה זה עולה</h2>
+      <p>מחירים גלויים, בלי הפתעות.</p>
+    </div>
+    <div class="stack">
+      <article class="panel price">
+        <h3>רילס לעסק בצילום שטח</h3>
+        <p class="amount"><bdi dir="ltr">1,300 ₪</bdi></p>
+        <p>עד שעת צילום בעסק, עריכה מלאה, מוזיקה, כתוביות ועיצוב דינמי.</p>
+        <a class="btn btn-line" data-wa="היי יוסי, מעניין אותי רילס לעסק בצילום שטח (1,300 ₪)" target="_blank" rel="noopener">מעניין אותי</a>
+      </article>
+      <article class="panel price">
+        <h3>סרטון שיווקי ב־AI</h3>
+        <p class="amount"><bdi dir="ltr">1,000 ₪</bdi></p>
+        <p>תסריט, ויזואל AI, קריינות AI, סאונד, עריכה קצבית וקריאה לפעולה.</p>
+        <a class="btn btn-line" data-wa="היי יוסי, מעניין אותי סרטון שיווקי ב-AI (1,000 ₪)" target="_blank" rel="noopener">מעניין אותי</a>
+      </article>
+      <article class="panel price">
+        <h3>הפקת AI קולנועית מורכבת</h3>
+        <p class="amount">החל מ־<bdi dir="ltr">3,500 ₪</bdi></p>
+        <p>לפי אורך ומורכבות. קונספט, תסריט מלא, שוטים מורכבים, עיצוב סאונד מלא, דיבוב או מוזיקה מקורית ועריכה קולנועית.</p>
+        <a class="btn btn-line" data-wa="היי יוסי, מעניינת אותי הפקת AI קולנועית מורכבת" target="_blank" rel="noopener">מעניין אותי</a>
+      </article>
+      <article class="panel price best">
+        <span class="tag">הכי משתלם</span>
+        <h3>ריטיינר חודשי</h3>
+        <p class="amount"><bdi dir="ltr">4,200 ₪</bdi> לחודש <s>במקום <bdi dir="ltr">5,200 ₪</bdi></s></p>
+        <p>4 סרטונים מלאים בחודש, תכנון חודשי, ליווי קריאייטיבי ועריכה.</p>
+        <a class="btn btn-wa" data-wa="היי יוסי, מעניין אותי ריטיינר חודשי (4 סרטונים בחודש)" target="_blank" rel="noopener">מעניין אותי</a>
+      </article>
+    </div>
+    <ul class="terms">
+      <li>עד 2 סבבי תיקונים כלולים. סבב נוסף <bdi dir="ltr">150–200 ₪</bdi>.</li>
+      <li>מסירה עד 5 ימי עסקים מקבלת כל החומרים או מיום הצילום.</li>
+      <li>ביתר עילית וירושלים בלי תוספת. מחוץ לאזור <bdi dir="ltr">150–250 ₪</bdi> לפי מרחק.</li>
+      <li>תשלום: 50% מקדמה בהזמנה, 50% בסיום ולפני מסירת הקובץ הסופי.</li>
+    </ul>
+  </section>
+
+  <section class="pad wrap" aria-labelledby="how-t">
+    <div class="sec-head"><span class="eyebrow">התהליך</span><h2 id="how-t">איך זה עובד</h2></div>
+    <ol class="steps panel">
+      <li><span>1</span>שיחת היכרות</li>
+      <li><span>2</span>תסריט וקונספט</li>
+      <li><span>3</span>צילום או הפקה</li>
+      <li><span>4</span>עריכה</li>
+      <li><span>5</span>מסירה</li>
+    </ol>
+  </section>
+
+  <section class="pad wrap about" aria-labelledby="ab-t">
+    <div class="sec-head"><span class="eyebrow">עליי</span><h2 id="ab-t">מי עומד מאחורי זה</h2></div>
+    <div class="panel">
+      <blockquote>״אני אוהב להפוך רעיונות לוויזואל שעובד.״</blockquote>
+      <p>אני יוסי בנט, עורך וידאו ויוצר תוכן AI. אני לוקח רעיון אחד חזק ונותן לו את הבמה, בלי רעש מסביב.</p>
+      <p class="gear">בציוד: <bdi dir="ltr">DJI Osmo Pocket 3</bdi>, <bdi dir="ltr">DJI Mic 2</bdi>.</p>
+    </div>
+  </section>
+
+  <section class="pad wrap final" id="contact" aria-labelledby="fin-t">
+    <h2 id="fin-t">יש לכם רעיון? בואו נהפוך אותו לסרטון.</h2>
+    <a class="btn btn-wa" data-wa="היי יוסי, הגעתי מהאתר ואני רוצה סרטון. מה שאני צריך: " target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><use href="#wa"/></svg>שלחו לי הודעה בוואטסאפ</a>
+    <p>או התקשרו: <a href="tel:+972583210519"><bdi dir="ltr">058-3210-519</bdi></a></p>
+    <a class="tour" href="index.html?full=1">לסיור המלא בבית (מומלץ במחשב)</a>
+  </section>
+</main>
+
+<footer>בנט סושיאל · <a href="mailto:yosibanet@gmail.com"><bdi dir="ltr">yosibanet@gmail.com</bdi></a></footer>
+
+<nav class="bar" id="bar" aria-label="יצירת קשר">
+  <a class="btn btn-wa" data-wa="היי יוסי, הגעתי מהאתר" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><use href="#wa"/></svg>וואטסאפ ליוסי</a>
+  <a class="btn btn-call" href="tel:+972583210519" aria-label="התקשרו ליוסי"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.3.2 2.5.57 3.6a1 1 0 0 1-.25 1z"/></svg></a>
+</nav>
+
+<dialog id="player" aria-label="נגן וידאו">
+  <button class="x" type="button" id="p-x" aria-label="סגירה">×</button>
+  <div class="p-in">
+    <video id="p-v" controls playsinline preload="none"></video>
+    <p class="p-cap" id="p-cap"></p>
+    <a class="btn btn-wa" id="p-wa" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><use href="#wa"/></svg>אני רוצה סרטון כזה</a>
+  </div>
+</dialog>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="wa" viewBox="0 0 32 32"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1 1-3.8-.2-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1-1.9-1-3.2-1.7-4.4-3.8-.3-.6.3-.5 1-1.8.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.3 1.4 3.5c.2.2 2.4 3.6 5.8 5.1 2.2.9 3 1 4.1.8.7-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></symbol></svg>
+
+<noscript><p class="pad" style="padding-block:20px">לצפייה בכל העבודות: <a href="index.html?full=1">האתר המלא</a>.</p></noscript>
+
+<script src="assets/data/site-data.js?v=b1110r"></script>
+<script>
+(() => {
+  const WA = 'https://wa.me/972524558719?text=';
+  const wa = t => WA + encodeURIComponent(t);
+  for (const a of document.querySelectorAll('[data-wa]')) a.href = wa(a.dataset.wa);
+
+  const S = window.SITE || { works: [] }, byId = Object.fromEntries(S.works.map(w => [w.id, w]));
+  // the six that open the page: one of each kind first, strongest results up front
+  const FEATURED = ['showreel', 'itamar-shalom', 'ai-slichti', 'aron-kodesh', 'orchestra', 'karlin-renovation'];
+  const lite = (navigator.connection && navigator.connection.saveData) || matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const card = w => {
+    const b = document.createElement('button');
+    b.className = 'card'; b.type = 'button'; b.dataset.id = w.id;
+    b.innerHTML = `<div class="thumb" style="background-image:url(${w.lqip})"><span class="play" aria-hidden="true"></span>
+      <div class="cap"><b></b><small></small>${w.pitch ? '<em></em>' : ''}</div></div>`;
+    b.querySelector('b').textContent = w.title;
+    b.querySelector('small').textContent = w.client || '';
+    if (w.pitch) b.querySelector('em').textContent = w.pitch;
+    b.setAttribute('aria-label', 'לצפייה: ' + w.title);
+    return b;
+  };
+  for (const row of document.querySelectorAll('[data-row]')) {
+    const k = row.dataset.row;
+    const list = k === 'featured' ? FEATURED.map(id => byId[id]).filter(Boolean)
+      : S.works.filter(w => w.category === k).sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+    row.append(...list.map(card));
+  }
+
+  // posters and previews only when a card is about to be seen; a preview plays only while it is on screen
+  const seen = new IntersectionObserver(es => {
+    for (const e of es) {
+      const c = e.target, w = byId[c.dataset.id], th = c.firstElementChild;
+      if (e.isIntersecting && !c._img) { c._img = 1; const i = new Image(); i.onload = () => th.style.backgroundImage = `url(${w.poster})`; i.src = w.poster; }
+      if (lite) continue;
+      if (e.intersectionRatio > .6) {
+        if (!c._v) { const v = c._v = document.createElement('video'); v.muted = v.loop = v.playsInline = true; v.preload = 'auto';
+          v.setAttribute('aria-hidden', 'true'); v.onplaying = () => v.classList.add('on'); v.src = w.preview; th.prepend(v); }
+        c._v.play().catch(() => {});
+      } else if (c._v) c._v.pause();
+    }
+  }, { rootMargin: '0px 120px', threshold: [0, .6] });
+  for (const c of document.querySelectorAll('.card')) seen.observe(c);
+
+  // the rooms of the house: still first, the tiny loop joins when the room is on screen
+  const rooms = new IntersectionObserver(es => {
+    for (const e of es) {
+      const r = e.target;
+      if (e.isIntersecting && !r._bg) { r._bg = 1; r.style.backgroundImage = `url(assets/media/rooms/${r.dataset.room}-720.webp)`; }
+      if (lite) continue;
+      if (e.isIntersecting) {
+        if (!r._v) { const v = r._v = document.createElement('video'); v.muted = v.loop = v.playsInline = true; v.setAttribute('aria-hidden', 'true');
+          v.src = `assets/media/loops/${r.dataset.room}-m.mp4`; r.prepend(v); }
+        r._v.play().catch(() => {});
+      } else if (r._v) r._v.pause();
+    }
+  }, { rootMargin: '200px 0px' });
+  for (const r of document.querySelectorAll('.room')) rooms.observe(r);
+
+  const hv = document.getElementById('hero-v');
+  if (!lite) { hv.src = 'assets/media/loops/exterior-m.mp4'; hv.play().catch(() => {}); }
+
+  // player
+  const dlg = document.getElementById('player'), pv = document.getElementById('p-v'), cap = document.getElementById('p-cap'), pwa = document.getElementById('p-wa');
+  const shut = () => { pv.pause(); pv.removeAttribute('src'); pv.load(); };
+  document.addEventListener('click', e => {
+    const c = e.target.closest('.card'); if (!c) return;
+    const w = byId[c.dataset.id];
+    pv.poster = w.poster; pv.src = w.full; cap.textContent = [w.title, w.client].filter(Boolean).join(' · ');
+    pwa.href = wa(`היי יוסי, ראיתי באתר את "${w.title}" ואני רוצה סרטון כזה`);
+    dlg.showModal(); pv.play().catch(() => {});
+  });
+  document.getElementById('p-x').onclick = () => dlg.close();
+  dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener('close', shut);
+
+  // the contact bar joins once the first button has scrolled away
+  const bar = document.getElementById('bar');
+  new IntersectionObserver(([e]) => bar.classList.toggle('show', !e.isIntersecting)).observe(document.querySelector('.hero-cta'));
+})();
+</script>
+</body>
+</html>
