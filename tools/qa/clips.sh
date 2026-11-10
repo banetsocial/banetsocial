@@ -10,7 +10,7 @@ ssim() { ffmpeg -v error -i "$1" -i "$2" -filter_complex "[0]scale=640:358,forma
 SPECS="enter:transitions/v2/enter-kling.mp4:stills/v7-exterior-logo.jpg:rooms/studio-1280.webp
 t1:transitions/v2/t1-kling.mp4:rooms/studio-1280.webp:rooms/business-1280.webp
 t2:transitions/v2/t2-pro.mp4:rooms/business-1280.webp:rooms/events-1280.webp
-t3:transitions/v2/t3-kling.mp4:rooms/events-1280.webp:rooms/ai-1280.webp
+t3:transitions/v2/t3-join.mp4:rooms/events-1280.webp:rooms/ai-1280.webp
 t4:transitions/v2/t4-kling.mp4:rooms/ai-1280.webp:rooms/office-1280.webp
 exit:transitions/v2/exit-kling.mp4:rooms/office-1280.webp:rooms/beach-1280.webp"
 T=$(mktemp -d)

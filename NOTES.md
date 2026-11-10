@@ -242,3 +242,16 @@
 - **Phone turn toward the arch** per walk (`PHONE_TURN` in build-rooms-json: t1 1, t2 0.6, t3 0.6, t4 0), chosen by side-by-side comparison of 0/0.6/1. Override with `?turn=x` for testing.
 - Tried and rejected: automatic heading detection (`tools/aim-map.js`). On check it pointed walk 1 to the left while the arch is on the right, so it is unreliable and not used.
 - Balance after this round: 170.3.
+
+## Round 4 — Yossi on a real phone: "things appear and disappear, distortions"
+**Diagnosis:**
+1. **Morphing** (a table appears, a sofa disappears, the arch content changes): first→last frame generation between two rooms that were each created separately. The view through the arch doesn't show the next room, so Kling has to invent a path and bends objects along the way. A prompt alone won't fix it.
+2. **Smearing/double image in the tunnel:** my frame blending across fast steps. → Moved to **24fps** (121 frames per walk) and blend only where `steps[i] < 0.12` (per-step motion from motion-map); on fast steps the nearer single frame is shown.
+3. **Phone blur:** phones got 960 frames and enlarged the middle → phones now get 1280 frames with a light sharpen (`unsharp`).
+**New walk method ("hidden cut through a doorway")** — tested on walk 3 (events → AI):
+- Part A: image→video from the hall only (no forced end frame) — the camera walks into the arch. Part B: image→video from the AI room only, the camera pulls back through a doorway — **played in reverse**. Nothing to "reach for" = no morphing (checked frame by frame).
+- Join (`transitions/v2/t3-join.mp4`): A pushes into the dark part of the arch (zoom done with per-frame scale and a fixed crop; **crop in ffmpeg evaluates w/h only once!**), fades to the site's dark color 0x0b2a33 over 0.6s, B fades in from it and opens up. No moment of double image and no blank frame.
+- Phone: the turn toward the arch only until the dark moment (`JOIN_AT`/`turnUntil`), holds on the arch, and resets inside the darkness.
+- Clip cost: 2 × 70 = 140. **Balance: 30.3.**
+**Checks that were tried and rejected:** motion-compensated morph detection (`tools/qa/morph.js`) — gave the known morph (old t2) the *lowest* score, so content is checked by eye frame by frame.
+**To convert the remaining walks (t1, t2, t4, exit) to the new method:** 8 clips — 560 (Standard) or 720 (Pro 1080p). Needs a top-up of credits.

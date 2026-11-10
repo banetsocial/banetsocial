@@ -262,7 +262,13 @@
     }
     const pos = Math.min(q.frames - 1, Math.max(0, sec * q.fps)), want = Math.round(pos);
     const i0 = Math.floor(pos), i1 = Math.min(i0 + 1, q.frames - 1);
-    if (imgs[i0] && imgs[i0]._ok && imgs[i1] && imgs[i1]._ok) return { a: imgs[i0], b: imgs[i1], f: pos - i0 };
+    if (imgs[i0] && imgs[i0]._ok && imgs[i1] && imgs[i1]._ok) {
+      // blend two neighbouring frames only when they are nearly the same picture; across a fast
+      // step (passing a door frame) a blend shows as a double image, so take the nearer frame instead
+      const calm = !q.steps || (q.steps[i0] ?? 1) < 0.12;
+      const f = pos - i0;
+      return calm ? { a: imgs[i0], b: imgs[i1], f } : (f < 0.5 ? { a: imgs[i0], b: imgs[i0], f: 0 } : { a: imgs[i1], b: imgs[i1], f: 0 });
+    }
     for (let d = 0; d < q.frames; d++) {            // nearest frame that has arrived
       const a = imgs[want - d], b = imgs[want + d];
       if (a && a._ok) return { a, b: a, f: 0 };
@@ -631,7 +637,7 @@
       if (seg.room === LAST) loadScene('beach');
     } else if (seqFrame(transId(seg), t)) {
       // through the arch into the next room: the real walk, scrubbed by the scroll
-      walk(seqFrame(transId(seg), t), seg.from, t, SEQ[transId(seg)].turn || 0);
+      walk(seqFrame(transId(seg), t), seg.from, t, SEQ[transId(seg)].turn || 0, SEQ[transId(seg)].turnUntil || 0.92);
       useLoop(null); setVideoRoom(t > 0.85 ? seg.to : -1);
       loadStill(seg.to + 1); loadSeq(seg.to === LAST ? 'exit' : 't' + (seg.to + 1));
     } else {
@@ -651,13 +657,16 @@
   // as the next room opens up.
   // ?turn=x overrides every walk's phone turn (for side-by-side checks)
   const TURN_OVERRIDE = new URLSearchParams(location.search).get("turn");
-  function walk(fr, from, t, turn = 0) {
+  function walk(fr, from, t, turn = 0, until = 0.92) {
     const r = restCam(from, 1), u = ease(band(t, 0, 0.3));
     let cx = r.x - roomX(from);
     cx += (IW / 2 - cx) * u;
     // (a plain sine: it already starts and ends gently; easing it as well made the turn snap)
     if (TURN_OVERRIDE !== null) turn = +TURN_OVERRIDE;
-    if (turn && M && view.w < view.h) cx += turn * (IW / 2) * Math.sin(Math.PI * band(t, 0.02, 0.92));
+    if (turn && M && view.w < view.h) cx += turn * (IW / 2) * (until < 0.9
+      // two-part walk: turn toward the doorway and hold it; the reset to the middle hides in the dark moment
+      ? (t < until ? ease(band(t, 0.02, until * 0.8)) : 0)
+      : Math.sin(Math.PI * band(t, 0.02, until)));
     paintPair(fr, cx, r.y + (IH / 2 - r.y) * u, r.z + (1 - r.z) * u);
     hideLayers(); setUI(-1);
   }

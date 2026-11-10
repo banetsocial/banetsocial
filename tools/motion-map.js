@@ -7,7 +7,7 @@ const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const ROOT = path.join(__dirname, '..');
-const FPS = 15, SAMPLES = 40;
+const FPS = 24, SAMPLES = 60;
 const UNIFORM = 0.35;                          // share of the scroll spread evenly (keeps calm parts moving)
 const DOORS = { enter: [2.5, 3.75, 1.8], exit: [1.8, 3.4, 1.5] };   // [from s, to s, extra weight]
 
@@ -42,12 +42,13 @@ for (const id of ['enter', 't1', 't2', 't3', 't4', 'exit']) {
     const f = j + (target - cum[j]) / Math.max(cum[j + 1] - cum[j], 1e-9);
     knots.push([+(k / SAMPLES).toFixed(3), +(Math.min(f, n - 1) / FPS).toFixed(3)]);
   }
-  out[id] = { time: knots, mean };
+  out[id] = { dur: (n - 1) / FPS, time: knots, mean, steps: motion.map(m => +m.toFixed(3)) };
   const peak = Math.max(...motion), peakAt = motion.indexOf(peak);
   console.log(`${id}: ${n} frames, mean change ${mean.toFixed(3)}, peak ${peak.toFixed(3)} at ${(peakAt / FPS).toFixed(2)}s`);
 }
 // how long each walk is on the scroll: busier walks get more, calm ones less (around the median)
 const means = Object.values(out).map(o => o.mean).sort((a, b) => a - b), med = means[means.length >> 1];
-for (const o of Object.values(out)) o.len = +Math.min(1.5, Math.max(0.75, Math.sqrt(o.mean / med))).toFixed(3);
+// ...and longer clips (a two-part walk through a doorway) get proportionally more
+for (const o of Object.values(out)) o.len = +(Math.min(1.5, Math.max(0.75, Math.sqrt(o.mean / med))) * Math.min(2, o.dur / 5.04)).toFixed(3);
 fs.writeFileSync(path.join(ROOT, 'assets/data/motion.json'), JSON.stringify(out) + '\n');
 console.log('scroll length factors:', Object.entries(out).map(([k, o]) => k + ' ' + o.len).join(', '));

@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 # Every walk (Kling O3 clips) → a frame sequence the scroll scrubs.
 #   bash tools/build-seqs.sh            (all)      bash tools/build-seqs.sh t2   (one)
-# Output: assets/media/sequences/<id>/{d,m}/0001.webp ...   d = 1280 wide, m = 960 wide
+# Output: assets/media/sequences/<id>/{d,m}/0001.webp ...   d = 1280 wide, m = 1280 sharpened (phones enlarge the middle)
 # The last XFADE frames blend into the still the site shows when you arrive, so the hand-off
 # from the walk to the room (or the beach) has no seam.
 set -eu
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT/assets/media"
-FPS=15
+FPS=24
 XFADE=5
 # id : clip : still we arrive at
 SPECS="enter:transitions/v2/enter-kling.mp4:rooms/studio-1280.webp
 t1:transitions/v2/t1-kling.mp4:rooms/business-1280.webp
 t2:transitions/v2/t2-pro.mp4:rooms/events-1280.webp
-t3:transitions/v2/t3-kling.mp4:rooms/ai-1280.webp
+t3:transitions/v2/t3-join.mp4:rooms/ai-1280.webp
 t4:transitions/v2/t4-kling.mp4:rooms/office-1280.webp
 exit:transitions/v2/exit-kling.mp4:rooms/beach-1280.webp"
 
@@ -34,7 +34,7 @@ for spec in $SPECS; do
   for f in "$out"/tmp/*.png; do
     b=$(basename "$f" .png)
     ffmpeg -v error -y -i "$f" -c:v libwebp -quality 74 "$out/d/$b.webp"
-    ffmpeg -v error -y -i "$f" -vf "scale=960:-2:flags=lanczos" -c:v libwebp -quality 70 "$out/m/$b.webp"
+    ffmpeg -v error -y -i "$f" -vf "unsharp=5:5:0.6:5:5:0" -c:v libwebp -quality 72 "$out/m/$b.webp"
   done
   rm -rf "$out/tmp"
   echo "$id: $n frames $(du -sh "$out/d" | cut -f1) / $(du -sh "$out/m" | cut -f1)"
