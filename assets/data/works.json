@@ -33,22 +33,6 @@
       "lqip": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQAwCdASoMABYAPu1iqU2ppaQiMAgBMB2JZACsAA+PYVlNTivhBgAA/c0+k/x/apaKlNNprw5iXv+QSgqr0rhNWJ9A33oVZFdyG5Ymorusw+sT9iY2Blcj/C1dGpBAZw4d3WqnJBXsgAAA"
     },
     {
-      "id": "coffee",
-      "category": "business",
-      "title": "COFFEE",
-      "client": "הפקת וידאו לבית קפה",
-      "pitch": "",
-      "stat": "",
-      "featured": false,
-      "wall": [
-        "business"
-      ],
-      "poster": "assets/media/works/coffee/poster.webp",
-      "preview": "assets/media/works/coffee/preview.mp4",
-      "full": "assets/media/works/coffee/full.mp4",
-      "lqip": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAQBACdASoMABYAPu1oqk6ppiQiMAgBMB2JbACdEf/gLBKmctXMe4AB3AD+7uyMyIxpCTMf97uMXq8LKrHImf2jpAtVPO27WZgd/y7TGa1yVicaIrv/UkTWs6POrDS5POSDVi2wayW70C2bV2yYPkajSxwlYKqnOAAAAA=="
-    },
-    {
       "id": "bichler",
       "category": "business",
       "title": "ביכלר נדל״ן",
@@ -547,6 +531,22 @@
       "preview": "assets/media/works/aron-kodesh/preview.mp4",
       "full": "assets/media/works/aron-kodesh/full.mp4",
       "lqip": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAwBACdASoMABYAPu1iqU2ppaOiMAgBMB2JYgCdEf/gOc3tHI1H8JnBvsAA/jMVwU3E/RdggKkHVY70q0+/QnFRUB/B8W/EQJylt+8ZudK4zMAkrqI6E6VgZDiTfh/LlkRKK+lGAh3QzRngtzPAAA=="
+    },
+    {
+      "id": "gabbaim",
+      "category": "events",
+      "title": "ועידת הגבאים",
+      "client": "מיט א ברען",
+      "pitch": "",
+      "stat": "",
+      "featured": false,
+      "wall": [
+        "events"
+      ],
+      "poster": "assets/media/works/gabbaim/poster.webp",
+      "preview": "assets/media/works/gabbaim/preview.mp4",
+      "full": "assets/media/works/gabbaim/full.mp4",
+      "lqip": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAABQBACdASoMABYAPu1iqU2ppaOiMAgBMB2JaACdOUB1f4Du0ziZJZP7ehYAAP5+FgklkOmSXBXyJaFUIN7cswhHo7wYiK2bdLm86XGAyc4oBYbJwjlq8ql6GyrVxjNzpOb38SXcV0IdYWGTumo2DbUfrVMruq1pHWBMWN7MtUCsDm4h7eZiNkx1ehoAAA=="
     }
   ]
 }

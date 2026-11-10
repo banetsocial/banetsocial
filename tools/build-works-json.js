@@ -9,8 +9,8 @@ const ROOT = path.join(__dirname, '..');
 const WALL = {
   showreel: ['showreel'],
   studio: ['studio-mix', 'single-a-base', 'clip-bts', 'jerusalem', 'nature', 'sukkot-festival', 'warehouse', 'karlin-donors-1'],
-  business: ['itamar-shalom', 'karlin-renovation', 'coffee', 'bichler', 'darshu', 'mapana', 'karlin-donors-2', 'karlin-frame'],
-  events: ['orchestra', 'sukkot', 'dinner', 'chassidic-event', 'live-keys', 'conference'],
+  business: ['itamar-shalom', 'karlin-renovation', 'bichler', 'darshu', 'mapana', 'karlin-donors-2', 'karlin-frame'],
+  events: ['orchestra', 'sukkot', 'dinner', 'gabbaim', 'chassidic-event', 'live-keys', 'conference'],
   ai: ['ai-slichti', 'ai-hayom', 'ai-nishpoch', 'ai-kodem', 'ai-beyom', 'ai-koenig'],
 };
 
