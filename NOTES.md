@@ -229,3 +229,16 @@
 - **Living loops** (`loops/src/*.mp4` → `loops/<id>-{d,m}.mp4`, `bash tools/build-loops.sh`): exterior, 5 rooms, beach. Locked camera (SSIM 0.996 between frames), so the screens the site overlays stay in place. The beach has clear waves; the rooms have only subtle motion (lights and reflections).
 - **Code (journey.js):** `loadSeq`/`seqFrame` generic for every walk; `useLoop` plays a single loop and draws it instead of the still (`drawable`); at rest `draw(..., only, src)` draws the room alone (no neighbor overlap), so the walk lands on it with no seam, and the screens fade in during the first 10%. `walk()` starts from the camera position of the rest (zoom/pan) and settles into the clip. On phones (portrait) the view turns toward the arch during the walk; the look-around in each room is middle → left → right → middle.
 - **Known issue:** walk **t2** (business → events) does not walk through the arch; the room "changes in place" (the table turns into a piano). It needs regenerating (70) to match the others.
+
+## Quality loop (QA) — check, fix, check again
+**Single command:** `bash tools/qa/run-all.sh [url]` → PASS/FAIL. Run it after every change.
+- `tools/qa/clips.sh`: every walk starts and ends on its rooms (SSIM ≥ 0.90), plus the sharpest frame step in each clip and where it falls.
+- `tools/qa/sweep.mjs`: scrolls the whole journey in headless Chrome in 2% steps (desktop 1280×720, phone 390×844) and measures the image change between neighboring steps. Flags a jump (×3 over local typical and >6), an empty frame, or a JS error.
+**What it found and what was fixed (rounds 1→3):**
+- Phone: change per step was very high (max 71) → rooms on phones get more scroll (studio 2.1, others 1.9), the look-around uses a sine curve (peak ×1.6 instead of ×3), and the turn toward the arch uses a plain sine → max 44, no jumps.
+- Clips: sharp frame steps where the camera passes a door or arch (enter 3.25s, t3 3.67s, exit 3.5s), fast motion rather than distortion. → **adaptive scroll** `tools/motion-map.js`: the scroll inside each walk is spent in proportion to the image change (35% even, 65% by motion, doors ×1.5–1.8), and each walk's length is scaled by its overall motion (`assets/data/motion.json` → `seqs[id].time/len`).
+- **Frame blending:** between two walk frames both are drawn (the next one over the previous one, with opacity equal to the fraction), so the scroll doesn't step through 15 frames a second.
+- **Walk 2** regenerated in **Kling O3 Pro 1080p (90 credits)** with a drone prompt that walks physically through the arch: `transitions/v2/t2-pro.mp4`. Seams 0.989/0.987.
+- **Phone turn toward the arch** per walk (`PHONE_TURN` in build-rooms-json: t1 1, t2 0.6, t3 0.6, t4 0), chosen by side-by-side comparison of 0/0.6/1. Override with `?turn=x` for testing.
+- Tried and rejected: automatic heading detection (`tools/aim-map.js`). On check it pointed walk 1 to the left while the arch is on the right, so it is unreliable and not used.
+- Balance after this round: 170.3.

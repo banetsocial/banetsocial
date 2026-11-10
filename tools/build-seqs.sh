@@ -12,7 +12,7 @@ XFADE=5
 # id : clip : still we arrive at
 SPECS="enter:transitions/v2/enter-kling.mp4:rooms/studio-1280.webp
 t1:transitions/v2/t1-kling.mp4:rooms/business-1280.webp
-t2:transitions/v2/t2-kling.mp4:rooms/events-1280.webp
+t2:transitions/v2/t2-pro.mp4:rooms/events-1280.webp
 t3:transitions/v2/t3-kling.mp4:rooms/ai-1280.webp
 t4:transitions/v2/t4-kling.mp4:rooms/office-1280.webp
 exit:transitions/v2/exit-kling.mp4:rooms/beach-1280.webp"

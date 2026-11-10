@@ -91,12 +91,19 @@ const SEQ_TIME = {
   enter: [[0, 0], [0.35, 2.5], [0.8, 3.75], [1, 5.04]],   // doors swing open 2.5–3.75s
   exit: [[0, 0], [0.3, 1.8], [0.75, 3.4], [1, 5.04]],     // office door opens 1.8–3.4s
 };
+// tools/motion-map.js: scroll spent in proportion to how much the picture moves (falls back to SEQ_TIME)
+const motionFile = path.join(__dirname, '..', 'assets/data/motion.json');
+const MOTION = fs.existsSync(motionFile) ? JSON.parse(fs.readFileSync(motionFile, 'utf8')) : {};
+// phones (portrait) see only the middle of each walk: how far to turn toward the arch on the right while
+// walking through it. Chosen by comparing 0 / 0.6 / 1 frame by frame: walk 1 barely turns by itself,
+// walk 4 heads straight into its arch.
+const PHONE_TURN = { t1: 1, t2: 0.6, t3: 0.6, t4: 0 };
 const seqs = {};
 for (const id of ['enter', 't1', 't2', 't3', 't4', 'exit']) {
   const dir = path.join(__dirname, '..', 'assets/media/sequences', id, 'd');
   const frames = fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => f.endsWith('.webp')).length : 0;
   if (frames) seqs[id] = { frames, fps: 15, desktop: `assets/media/sequences/${id}/d/`, mobile: `assets/media/sequences/${id}/m/`,
-    time: SEQ_TIME[id] || [[0, 0], [1, 5.04]] };
+    time: (MOTION[id] && MOTION[id].time) || SEQ_TIME[id] || [[0, 0], [1, 5.04]], len: (MOTION[id] && MOTION[id].len) || 1, turn: PHONE_TURN[id] || 0 };
 }
 scenes.seqs = seqs;
 // living loops (tools/build-loops.sh): locked camera, drawn instead of the still while you stand there

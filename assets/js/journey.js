@@ -171,8 +171,8 @@
 
   // timeline in "screens" (1 = one viewport of scroll). Phones get shorter stretches so every swipe moves something.
   const M = isMobile();
-  const REST = M ? { studio: 1.5, office: 0.6 } : { studio: 0.8, office: 0.7 };
-  const REST_DEFAULT = M ? 1.2 : 0.9, TRANS = M ? 1.25 : 1.5;
+  const REST = M ? { studio: 2.1, office: 0.6 } : { studio: 0.8, office: 0.7 };
+  const REST_DEFAULT = M ? 1.9 : 0.9, TRANS = M ? 1.25 : 1.5;
   const REST_ZOOM = 0.035;                 // camera creeps forward while you rest in a room
   const OVERLAP = 0.26;                    // share of a room's width that blends into its neighbour
   const STEP = IW * (1 - OVERLAP);         // distance between rooms in the panorama (virtual px)
@@ -181,18 +181,25 @@
   const BLUR = M ? 0 : 3.5;                // motion blur at full turning speed (desktop only: cheap there)
   const canBlur = BLUR > 0 && 'filter' in ctx;
   const INTRO = M ? 0.45 : 0.6, DOOR = M ? 1.1 : 1.3;   // standing outside; walking through a door
+  // each walk's share of the scroll follows how much its picture moves (tools/motion-map.js), so the
+  // pace feels the same from the front door to the beach
+  const walkLen = (id, base) => base * ((SC.seqs && SC.seqs[id] && SC.seqs[id].len) || 1);
   const segs = []; let total = 0;
   if (SC.exterior) {
     segs.push({ type: 'intro', start: 0, len: INTRO }); total += INTRO;
-    segs.push({ type: 'enter', start: total, len: DOOR }); total += DOOR;
+    const len = walkLen('enter', DOOR);
+    segs.push({ type: 'enter', start: total, len }); total += len;
   }
   rooms.forEach((room, i) => {
     const len = REST[room.id] || REST_DEFAULT;
     segs.push({ type: 'rest', room: i, start: total, len }); total += len;
-    if (room.next) { segs.push({ type: 'trans', from: i, to: i + 1, start: total, len: TRANS }); total += TRANS; }
+    if (room.next) {
+      const tl = walkLen('t' + (i + 1), TRANS);
+      segs.push({ type: 'trans', from: i, to: i + 1, start: total, len: tl }); total += tl;
+    }
   });
   const LAST = rooms.length - 1;
-  if (SC.beach && rooms[LAST].door) { segs.push({ type: 'exit', start: total, len: DOOR }); total += DOOR; }
+  if (SC.beach && rooms[LAST].door) { const len = walkLen('exit', DOOR); segs.push({ type: 'exit', start: total, len }); total += len; }
 
   /* ---------- images ---------- */
   const stills = rooms.map(() => null);
@@ -253,13 +260,20 @@
       const [t0, s0] = k[j - 1], [t1, s1] = k[j];
       sec = s0 + (s1 - s0) * (t - t0) / (t1 - t0); break;
     }
-    const want = Math.min(q.frames - 1, Math.max(0, Math.round(sec * q.fps)));
+    const pos = Math.min(q.frames - 1, Math.max(0, sec * q.fps)), want = Math.round(pos);
+    const i0 = Math.floor(pos), i1 = Math.min(i0 + 1, q.frames - 1);
+    if (imgs[i0] && imgs[i0]._ok && imgs[i1] && imgs[i1]._ok) return { a: imgs[i0], b: imgs[i1], f: pos - i0 };
     for (let d = 0; d < q.frames; d++) {            // nearest frame that has arrived
       const a = imgs[want - d], b = imgs[want + d];
-      if (a && a._ok) return a;
-      if (b && b._ok) return b;
+      if (a && a._ok) return { a, b: a, f: 0 };
+      if (b && b._ok) return { a: b, b, f: 0 };
     }
     return null;
+  }
+  // draw a walk frame (pair) with one camera
+  function paintPair(fr, cx, cy, z) {
+    clearStage(fr.a); paint(fr.a, cx, cy, z);
+    if (fr.f > 0.02 && fr.b !== fr.a) paint(fr.b, cx, cy, z, fr.f);
   }
   const transId = seg => 't' + (seg.from + 1);
 
@@ -321,7 +335,8 @@
     return [C, L, R, C];
   }
   function panX(i, t) {
-    const P = panPath(i), n = P.length - 1, k = Math.min(Math.floor(t * n), n - 1), u = ease(t * n - k);
+    // sine easing: never faster than ~1.6x its average speed (the cubic one peaked at 3x)
+    const P = panPath(i), n = P.length - 1, k = Math.min(Math.floor(t * n), n - 1), u = (1 - Math.cos(Math.PI * (t * n - k))) / 2;
     return P[k] + (P[k + 1] - P[k]) * u;
   }
   function restCam(i, t) {
@@ -584,8 +599,8 @@
       loadStill(0); loadSeq('enter');
     } else if (seg.type === 'enter' && seqFrame('enter', t)) {
       // the clip starts on the exterior still; carry over the small creep-in of the intro and let it go
-      const img = seqFrame('enter', t), z = 1 + REST_ZOOM * (1 - ease(band(t, 0, 0.35)));
-      useLoop(null); clearStage(img); paint(img, IW / 2, IH / 2, z);
+      const fr = seqFrame('enter', t), z = 1 + REST_ZOOM * (1 - ease(band(t, 0, 0.35)));
+      useLoop(null); paintPair(fr, IW / 2, IH / 2, z);
       hideLayers(); setUI(-1); setVideoRoom(t > 0.8 ? 0 : -1);
       loadStill(1); loadSeq('t1');
     } else if (seg.type === 'enter') {
@@ -616,7 +631,7 @@
       if (seg.room === LAST) loadScene('beach');
     } else if (seqFrame(transId(seg), t)) {
       // through the arch into the next room: the real walk, scrubbed by the scroll
-      walk(seqFrame(transId(seg), t), seg.from, t, true);
+      walk(seqFrame(transId(seg), t), seg.from, t, SEQ[transId(seg)].turn || 0);
       useLoop(null); setVideoRoom(t > 0.85 ? seg.to : -1);
       loadStill(seg.to + 1); loadSeq(seg.to === LAST ? 'exit' : 't' + (seg.to + 1));
     } else {
@@ -634,13 +649,16 @@
   // toArch: the arches are on the right-hand wall. A phone in portrait sees only the middle of the
   // clip, so there the view turns toward the arch while walking up to it and back to the middle
   // as the next room opens up.
-  function walk(img, from, t, toArch = false) {
+  // ?turn=x overrides every walk's phone turn (for side-by-side checks)
+  const TURN_OVERRIDE = new URLSearchParams(location.search).get("turn");
+  function walk(fr, from, t, turn = 0) {
     const r = restCam(from, 1), u = ease(band(t, 0, 0.3));
     let cx = r.x - roomX(from);
     cx += (IW / 2 - cx) * u;
-    if (toArch && M && view.w < view.h) cx += (IW - IW / 2) * Math.sin(Math.PI * ease(band(t, 0.05, 0.9)));
-    clearStage(img);
-    paint(img, cx, r.y + (IH / 2 - r.y) * u, r.z + (1 - r.z) * u);
+    // (a plain sine: it already starts and ends gently; easing it as well made the turn snap)
+    if (TURN_OVERRIDE !== null) turn = +TURN_OVERRIDE;
+    if (turn && M && view.w < view.h) cx += turn * (IW / 2) * Math.sin(Math.PI * band(t, 0.02, 0.92));
+    paintPair(fr, cx, r.y + (IH / 2 - r.y) * u, r.z + (1 - r.z) * u);
     hideLayers(); setUI(-1);
   }
 

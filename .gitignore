@@ -1,3 +1,4 @@
 assets/media/drafts/
 tools/encode-log.txt
 .claude/
+tools/qa/out/
