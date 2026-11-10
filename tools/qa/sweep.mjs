@@ -53,10 +53,10 @@ const frame = () => new Promise(r => setTimeout(r, 0));
 
 // pass 1: walk through slowly so every walk's frames are downloaded
 for (let p = 0; p < end; p += 0.25) { await evaluate(`scrollTo(0, innerHeight*${p})`); await sleep(350); }
-// ...and wait until they have all arrived (up to 4 minutes), so the measurement is of the finished walk
+// ...and wait until they have all arrived (up to 8 minutes), so the measurement is of the finished walk
 const t0 = Date.now(); let ld;
 for (;;) { ld = await evaluate(`JSON.stringify(window.__journeyLoad || null)`); ld = ld && JSON.parse(ld);
-  if (!ld || ld.got >= ld.want || Date.now() - t0 > 240000) break; await sleep(1000); }
+  if (!ld || ld.got >= ld.want || Date.now() - t0 > 480000) break; await sleep(1000); }
 const loadNote = ld ? `frames ${ld.got}/${ld.want}, waited ${((Date.now() - t0) / 1000).toFixed(0)}s` : 'no load counter';
 await evaluate(`scrollTo(0, 0)`); await sleep(1500);
 
