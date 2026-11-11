@@ -25,7 +25,7 @@ jobs:
       - name: Collect site files (skip source tooling and review images)
         run: |
           mkdir _site
-          cp -r index.html m.html .nojekyll assets _site/
+          cp -r index.html m.html accessibility.html .nojekyll assets _site/
           # source material the page never loads (AI stills, raw transition clips): keep the upload small
           rm -rf _site/assets/media/stills _site/assets/media/transitions _site/assets/media/loops/src
           # full videos that live on the Kolbo CDN (assets/data/media-cdn.json) are not uploaded again
