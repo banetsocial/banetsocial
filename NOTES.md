@@ -367,3 +367,17 @@ Balance 11,055.3 → 10,845.3. The 15 planned for image edits were not spent.
   half hidden behind the camera tripod, so the model has no clear path. A retry needs approval (70).
 - JOIN_AT emptied, PHONE_TURN t3/t4 = 0.6, t4 removed from build-joins / joins.json.
 - QA: sweep PASS both sizes (0 spikes / 0 blank / 0 errors); clips.sh still flags only t2's soft landing (0.817).
+
+## Round 12 — walk 1 retry accepted (2026-11-11, 70 approved, 70 spent)
+- Balance 10,845.3 → 10,775.3. `transitions/v2/t1-walk.mp4` (Kling O3 Standard, 5s 720p). All four room-to-room walks are now real camera moves.
+- What changed in the prompt: "from the very first second the camera physically moves: pans right and walks diagonally
+  forward to the right"; the tripod and light stand "stay fixed and slide out of frame as the viewer walks past";
+  "the doorway does not move by itself". Result: the camera pans right, the wall between the rooms sweeps across the
+  lens, the meeting room is revealed and settles. Seams 0.985 / 0.981.
+- Flaws: it is a wall sweep more than a walk through the middle of the arch; for a few frames the film camera on the
+  tripod is a dark blurred shape and a light stand shows at the left edge.
+- Studio now has the arch patch too (still + loop). joins.json is empty; build-joins.js has no walks left.
+- QA: desktop sweep clean. Phone sweep: 1 spike (x3.5) at the stone pillar crossing the narrow phone crop in t4 —
+  two neighbouring frames, cannot be subdivided; more scroll there (DOORS t4 weight 2) brought it from 58 to 34.
+  clips.sh still flags t2's soft landing (0.817).
+- Review file: review/walks-all.mp4.

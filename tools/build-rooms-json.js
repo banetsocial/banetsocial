@@ -97,7 +97,7 @@ const MOTION = fs.existsSync(motionFile) ? JSON.parse(fs.readFileSync(motionFile
 // phones (portrait) see only the middle of each walk: how far to turn toward the arch on the right while
 // walking through it. Chosen by comparing 0 / 0.6 / 1 frame by frame: walk 1 barely turns by itself,
 // walk 4 heads straight into its arch.
-const PHONE_TURN = { t1: 1, t2: 0.6, t3: 0.6, t4: 0.6 };
+const PHONE_TURN = { t1: 0.6, t2: 0.6, t3: 0.6, t4: 0.6 };
 // two-part walks (into a doorway, a moment of dark, out of the next one): the phone turn only covers
 // the first part, up to the dark moment at this clip second
 const JOIN_AT = {};

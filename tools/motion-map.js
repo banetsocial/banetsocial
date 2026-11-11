@@ -9,7 +9,7 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const FPS = 24, SAMPLES = 60;
 const UNIFORM = 0.35;                          // share of the scroll spread evenly (keeps calm parts moving)
-const DOORS = { enter: [2.5, 3.75, 1.8], exit: [1.8, 3.4, 1.5] };   // [from s, to s, extra weight]
+const DOORS = { enter: [2.5, 3.75, 1.8], exit: [1.8, 3.4, 1.5], t4: [2.7, 3.7, 2] };   // [from s, to s, extra weight]
 
 const out = {};
 for (const id of ['enter', 't1', 't2', 't3', 't4', 'exit']) {
