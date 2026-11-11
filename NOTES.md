@@ -440,3 +440,9 @@ Disabilities regulations 2013, standard IS 5568 = WCAG 2.0 AA, plus a public acc
 - Known gaps (stated on the page): no captions yet on videos with speech; the desktop walk is visual (the still
   version and the full works list are the alternative).
 - If Yossi ever receives clients at a physical place, the statement should also cover that place's accessibility.
+
+## סבב 17 — שיתוף, גוגל ו-AI (11.11.2026)
+- **כרטיס שיתוף חדש** (`assets/media/brand/og.jpg`, 1200x630, 134KB): חזית הבית עם "וידאו שנראה כמו קולנוע". המקור `tools/og-card.html`, הבנייה `bash tools/build-og.sh`. בשינוי תמונה מעלים את `?v=` בתג og:image, אחרת וואטסאפ ופייסבוק מציגים את הישנה מהזיכרון שלהם.
+- **תגי שיתוף** מלאים ב-index וב-m (site_name, url, מידות ותיאור תמונה) ו**נתוני עסק לגוגל** (JSON-LD מסוג ProfessionalService, בלי כתובת ובלי עיר, לפי ההחלטה מסבב קודם).
+- **sitemap.xml ו-llms.txt** נוספו לשורש ול-cp ב-pages.yml. robots.txt לא נוסף: בכתובת תחת /banetsocial/ גוגל לא קורא אותו, והיעדרו פירושו "מותר הכל".
+- **נשאר אצל יוסי:** Google Search Console (אימות + שליחת sitemap), Google Business Profile, ערוץ יוטיוב עם קישור לאתר, דומיין משלו.
