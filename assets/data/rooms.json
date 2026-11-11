@@ -2976,6 +2976,10 @@
         "desktop": "assets/media/loops/studio-d.mp4",
         "mobile": "assets/media/loops/studio-m.mp4"
       },
+      "business": {
+        "desktop": "assets/media/loops/business-d.mp4",
+        "mobile": "assets/media/loops/business-m.mp4"
+      },
       "events": {
         "desktop": "assets/media/loops/events-d.mp4",
         "mobile": "assets/media/loops/events-m.mp4"

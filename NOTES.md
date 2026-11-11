@@ -381,3 +381,14 @@ Balance 11,055.3 → 10,845.3. The 15 planned for image edits were not spent.
   two neighbouring frames, cannot be subdivided; more scroll there (DOORS t4 weight 2) brought it from 58 to 34.
   clips.sh still flags t2's soft landing (0.817).
 - Review file: review/walks-all.mp4.
+
+## Round 13 — business loop, jump buttons, client name (2026-11-11)
+- **Business living loop** (70 credits, approved by Yossi; balance 10,775.3 → 10,705.3): Kling O3 Standard, first = last =
+  the v6 business still, locked camera. `loops/src/business.mp4` → `business-{d,m}.mp4`. Camera locked (SSIM vs the
+  still constant 0.924 through the clip); motion is very subtle (frame vs frame 0.985).
+- `tools/build-loops.sh` now lays `assets/media/arch/<scene>.png` over a loop by itself when the patch exists.
+- **Jump buttons on desktop** (`#jump` in the stage, top corner, hidden under 768px): business / events / AI jump straight
+  to the room (12% into its rest segment, instant), contact goes to #office. The current room's button is lit (setUI).
+  Gotcha: in a JS String.replace replacement a doubled dollar sign becomes a single one; that broke the query-all helper once.
+- Aron Kodesh client: **גילופי מלכות** (from Yossi).
+- Still waiting from Yossi: 3–4 real client testimonial screenshots.

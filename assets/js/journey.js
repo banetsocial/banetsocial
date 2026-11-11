@@ -610,6 +610,7 @@
     rail.classList.toggle('on', railOn);
     if (railOn) shapeRail();
     if (ri >= 0) $(`.room-ui[data-room="${rooms[ri].id}"]`)?.classList.add('on');
+    for (const b of $$('#jump [data-go]')) b.classList.toggle('on', ri >= 0 && b.dataset.go === rooms[ri].id);
   }
 
   /* ---------- scroll → state ---------- */
@@ -715,6 +716,13 @@
     paintPair(fr, cx, r.y + (IH / 2 - r.y) * u, r.z + (1 - r.z) * u);
     hideLayers(); setUI(-1);
   }
+
+  // jump buttons: straight to a room, for visitors who do not want the whole walk
+  $('#jump')?.addEventListener('click', e => {
+    const b = e.target.closest('[data-go]'); if (!b) return;
+    const i = rooms.findIndex(r => r.id === b.dataset.go), s = segs.find(g => g.type === 'rest' && g.room === i);
+    if (s) scrollTo({ top: journey.getBoundingClientRect().top + scrollY + (s.start + s.len * 0.12) * view.h, behavior: 'auto' });
+  });
 
   addEventListener('scroll', schedule, { passive: true });
   addEventListener('resize', () => { railRoom = -1; uiRoom = -1; resize(); });

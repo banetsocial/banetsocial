@@ -331,3 +331,12 @@ html:not(.js) [data-reveal] .w { opacity: 1; transform: none; }
 /* the stand-in that does the leap (see flyIn): poster on a box, its own GPU layer, no filters */
 .fly-ghost { position: fixed; z-index: 2; margin: 0; border-radius: 8px; background: #000 center / cover no-repeat;
   box-shadow: var(--glow); transform-origin: 50% 50%; will-change: transform; backface-visibility: visible; pointer-events: none; }
+
+/* ---------- Jump buttons: straight to a room without the walk (desktop) ---------- */
+.jump { position: absolute; z-index: 4; inset-block-start: clamp(14px, 3vh, 28px); inset-inline-start: var(--gutter); display: flex; gap: 8px; }
+.jump button, .jump a { font: 500 .95rem/1 var(--font-text, inherit); color: #fff; text-decoration: none; cursor: pointer; padding: 10px 16px; border-radius: 999px;
+  border: 1px solid rgba(216, 243, 247, .4); background: rgba(6, 26, 34, .6); backdrop-filter: blur(6px); transition: background .2s, border-color .2s; }
+.jump button:hover, .jump a:hover { border-color: var(--accent); background: rgba(6, 26, 34, .85); }
+.jump button.on { background: var(--accent); border-color: var(--accent); color: #04161C; }
+@media (max-width: 767px) { .jump { display: none; } }
+html:not(.js) .jump, .static .jump { display: none; }
