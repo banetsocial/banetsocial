@@ -21,6 +21,8 @@
 <link rel="preload" as="image" href="assets/media/rooms/exterior-1280.webp" fetchpriority="high">
 <link rel="preload" as="image" href="assets/media/rooms/studio-720.webp" media="(max-width: 767px)">
 <link rel="stylesheet" href="assets/css/site.css?v=b1111h">
+<link rel="stylesheet" href="assets/css/a11y.css?v=b1111h">
+<script>try{var A=JSON.parse(localStorage.getItem("a11y")||"{}"),C=document.documentElement.classList;A.size&&C.add("a11y-s"+A.size);["contrast","still","links","font","cursor","spacing"].forEach(function(k){A[k]&&C.add("a11y-"+k)})}catch(e){}</script>
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -162,7 +164,7 @@
 
 <footer class="footer">
   <img src="assets/media/brand/logo-mark-240.png" alt="" width="79" height="80" loading="lazy">
-  <p>בנט סושיאל · <a href="mailto:yosibanet@gmail.com"><bdi dir="ltr">yosibanet@gmail.com</bdi></a></p>
+  <p>בנט סושיאל · <a href="mailto:yosibanet@gmail.com"><bdi dir="ltr">yosibanet@gmail.com</bdi></a> · <a href="accessibility.html">הצהרת נגישות</a></p>
 </footer>
 
 <a class="wa-float" href="https://wa.me/972524558719?text=%D7%94%D7%99%D7%99%20%D7%99%D7%95%D7%A1%D7%99%2C%20%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%9E%D7%94%D7%90%D7%AA%D7%A8" target="_blank" rel="noopener" aria-label="שלחו לי הודעה בוואטסאפ">
@@ -173,7 +175,7 @@
 <!-- Full-screen player -->
 <dialog class="player" id="player" aria-label="נגן וידאו">
   <button class="close" type="button" data-close aria-label="סגירה">×</button>
-  <video id="player-video" controls playsinline preload="none"></video>
+  <video id="player-video" controls playsinline preload="none" aria-label="סרטון העבודה"></video>
   <p class="player-caption" id="player-caption"></p>
 </dialog>
 
@@ -188,5 +190,6 @@
 
 <script src="assets/data/site-data.js?v=b1111h"></script>
 <script src="assets/js/journey.js?v=b1111h"></script>
+<script src="assets/js/a11y.js?v=b1111h"></script>
 </body>
 </html>

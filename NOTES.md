@@ -423,3 +423,20 @@ computer: about 700 kbit/s, 650 ms latency. At that speed one walk (5 MB of fram
   (same two known flags: t2 landing, t4 phone spike).
 - Not checked: whether part of the stutter is the computer itself (CPU), the browser pane was hidden so frame
   timing could not be measured.
+
+## Round 16 — accessibility (2026-11-11)
+Yossi asked for an accessibility button and to avoid legal trouble (Israeli law: Equal Rights for Persons with
+Disabilities regulations 2013, standard IS 5568 = WCAG 2.0 AA, plus a public accessibility statement).
+- Audit before: lang/dir, skip link, focus outline, contrast tokens (all text ≥ 4.5:1), alt texts, aria labels and a
+  reduced-motion still version were already in place. Missing: a way to pause auto-playing video (WCAG 2.2.2),
+  a name on the player video, an accessibility statement. (Automated axe check was blocked; checks were done by script.)
+- **Menu:** `assets/js/a11y.js` + `assets/css/a11y.css`, loaded on index.html, m.html, accessibility.html. Blue tab
+  on the right edge (middle on desktop, 38% height on phones). Panel: text size (110/125/140%), high contrast,
+  stop motion + videos (reloads; journey.js and m.html treat it as reduced motion → still version), highlight
+  links/buttons, readable font, spacing, big cursor, reset, link to the statement. Choices in localStorage 'a11y',
+  applied as `a11y-*` classes on <html> by a one-line script in each <head> (before first paint).
+- **accessibility.html:** the statement (what was done, known gaps, coordinator Yossi Banet with phone, WhatsApp,
+  email). Linked from both footers and the menu.
+- Known gaps (stated on the page): no captions yet on videos with speech; the desktop walk is visual (the still
+  version and the full works list are the alternative).
+- If Yossi ever receives clients at a physical place, the statement should also cover that place's accessibility.

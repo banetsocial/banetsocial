@@ -1,0 +1,95 @@
+/* Accessibility menu (assets/js/a11y.js) and the adjustments it switches on. Shared by every page. */
+
+/* ---------- the button on the side ---------- */
+.a11y-btn {
+  position: fixed; z-index: 60; inset-inline-start: 0; inset-block-start: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 10px 9px 8px; min-inline-size: 64px;
+  border: 2px solid #fff; border-inline-start: 0; border-radius: 0 18px 18px 0;
+  background: #1565C0; color: #fff; cursor: pointer;
+  font: 700 .8rem/1 "Heebo", system-ui, sans-serif;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .45);
+  transition: padding .2s, background .2s;
+}
+[dir="rtl"] .a11y-btn { border-radius: 18px 0 0 18px; }
+.a11y-btn svg { inline-size: 34px; block-size: 34px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.a11y-btn:hover, .a11y-btn:focus-visible { background: #0D47A1; padding-inline-end: 14px; }
+.a11y-btn:focus-visible { outline: 3px solid #FFD84D; outline-offset: 2px; }
+.a11y-btn.on::after { content: ""; position: absolute; inset-block-start: 6px; inset-inline-end: 6px; inline-size: 9px; block-size: 9px; border-radius: 50%; background: #FFD84D; }
+@media (max-width: 767px) {
+  .a11y-btn { inset-block-start: 38%; min-inline-size: 50px; padding: 8px 6px 6px; font-size: .7rem; }
+  .a11y-btn svg { inline-size: 28px; block-size: 28px; }
+}
+@media print { .a11y-btn { display: none; } }
+
+/* ---------- the panel ---------- */
+.a11y-panel {
+  inline-size: min(400px, calc(100vw - 24px)); max-block-size: calc(100dvh - 24px); overflow: auto;
+  margin: 12px; margin-inline-start: 12px; margin-inline-end: auto; inset-block: 0;
+  padding: 20px; border: 2px solid #fff; border-radius: 20px;
+  background: #0B2230; color: #fff; font: 400 1rem/1.4 "Heebo", system-ui, sans-serif;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .6);
+}
+.a11y-panel::backdrop { background: rgba(0, 0, 0, .55); }
+.a11y-panel[open] { animation: a11y-in .22s ease-out; }
+@keyframes a11y-in { from { opacity: 0; transform: translateX(24px); } }
+.a11y-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-block-end: 16px; }
+.a11y-head h2 { display: flex; align-items: center; gap: 10px; margin: 0; font: 700 1.35rem/1.1 "Rubik", "Heebo", sans-serif; color: #fff; }
+.a11y-head h2 svg { inline-size: 30px; block-size: 30px; padding: 4px; border-radius: 50%; background: #1565C0; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.a11y-x { inline-size: 44px; block-size: 44px; border-radius: 50%; border: 2px solid #fff; background: transparent; color: #fff; font-size: 28px; line-height: 1; cursor: pointer; }
+.a11y-panel button:focus-visible, .a11y-panel a:focus-visible { outline: 3px solid #FFD84D; outline-offset: 2px; }
+
+.a11y-size { display: flex; align-items: center; gap: 10px; padding: 12px 14px; margin-block-end: 12px; border-radius: 14px; background: #12344A; }
+.a11y-size span { flex: 1; font-weight: 700; font-size: 1.05rem; }
+.a11y-size button { inline-size: 52px; block-size: 46px; border-radius: 12px; border: 2px solid #fff; background: #1565C0; color: #fff; font: 700 1.15rem/1 "Heebo", sans-serif; cursor: pointer; }
+.a11y-size button:disabled { opacity: .35; cursor: default; }
+.a11y-size output { min-inline-size: 52px; text-align: center; font-weight: 700; }
+
+.a11y-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.a11y-t {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-block-size: 108px;
+  padding: 12px 8px; border-radius: 14px; border: 2px solid #3C6B80; background: #12344A; color: #fff; cursor: pointer;
+  font: 700 .98rem/1.2 "Heebo", system-ui, sans-serif; text-align: center;
+}
+.a11y-t svg { inline-size: 34px; block-size: 34px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.a11y-t small { font-weight: 400; font-size: .78rem; color: #CFE3EC; }
+.a11y-t:hover { border-color: #fff; }
+.a11y-t[aria-pressed="true"] { background: #FFD84D; border-color: #FFD84D; color: #10151A; }
+.a11y-t[aria-pressed="true"] small { color: #10151A; }
+
+.a11y-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-block-start: 16px; flex-wrap: wrap; }
+.a11y-reset { padding: 12px 16px; border-radius: 12px; border: 2px solid #fff; background: transparent; color: #fff; font: 700 1rem/1 "Heebo", sans-serif; cursor: pointer; }
+.a11y-foot a { color: #9FE3FF; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- the adjustments ---------- */
+html.a11y-s1 { font-size: 110%; }
+html.a11y-s2 { font-size: 125%; }
+html.a11y-s3 { font-size: 140%; }
+/* the menu itself keeps its size, so it always fits */
+.a11y-s1 .a11y-ui, .a11y-s2 .a11y-ui, .a11y-s3 .a11y-ui { font-size: 16px; }
+
+/* high contrast: pure white on black, bright yellow for everything you can press */
+html.a11y-contrast { --text: #fff; --dim: #fff; --accent: #FFE14D; --accent-ink: #000; --line: #fff; --surface: #000; --surface-2: #000; --bg: #000; }
+.a11y-contrast body { background: #000; }
+.a11y-contrast :is(p, li, h1, h2, h3, h4, small, em, b, span):not(.a11y-ui *) { color: #fff !important; text-shadow: none !important; }
+.a11y-contrast :is(.block, .card, .step, .tabs, .bar, footer, .footer):not(.a11y-ui *) { background-color: #000 !important; border-color: #fff !important; }
+.a11y-contrast .room-ui :is(.headline, .lead, .proof) { inline-size: fit-content; background: #000; padding: .1em .3em; }
+.a11y-contrast a:not(.a11y-ui *) { color: #FFE14D !important; }
+.a11y-contrast :is(button, .btn, .btn-primary, .all-btn, .wa-float):not(.a11y-ui, .a11y-ui *, .screen, .rail-card, .card, .g-card) { background: #000 !important; color: #FFE14D !important; border: 2px solid #FFE14D !important; }
+.a11y-contrast :focus-visible { outline: 4px solid #FFE14D !important; }
+
+/* stop motion: no animation anywhere (videos are paused by the script, the journey switches to its still version) */
+.a11y-still *, .a11y-still *::before, .a11y-still *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+
+/* highlighted links and buttons */
+.a11y-links a:not(.a11y-ui *) { text-decoration: underline !important; text-decoration-thickness: 2px !important; text-underline-offset: 3px; }
+.a11y-links :is(a, button, .btn):not(.a11y-ui, .a11y-ui *) { outline: 3px dashed #FFD84D !important; outline-offset: 2px; }
+
+/* readable font */
+.a11y-font body, .a11y-font body *:not(svg, svg *) { font-family: Arial, "Segoe UI", system-ui, sans-serif !important; }
+
+/* spacing */
+.a11y-spacing body :is(p, li, a, span, small, em, b, button, h1, h2, h3, h4):not(.a11y-ui, .a11y-ui *) { line-height: 1.9 !important; letter-spacing: .06em !important; word-spacing: .16em !important; }
+
+/* big cursor */
+.a11y-cursor, .a11y-cursor * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cpath d='M5 2v18l4.6-4.4 3.2 7 3-1.4-3.2-6.8H19z' fill='%23000' stroke='%23fff' stroke-width='1.4'/%3E%3C/svg%3E") 6 2, auto !important; }

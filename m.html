@@ -18,6 +18,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/a11y.css?v=b1111h">
+<script>try{var A=JSON.parse(localStorage.getItem("a11y")||"{}"),C=document.documentElement.classList;A.size&&C.add("a11y-s"+A.size);["contrast","still","links","font","cursor","spacing"].forEach(function(k){A[k]&&C.add("a11y-"+k)})}catch(e){}</script>
 <style>
 /* Banet Social — the light page for phones. The videos are the stage: the page opens on a reel of the work itself,
    the three kinds of work are one tap away, and WhatsApp is always under the thumb. */
@@ -223,7 +225,7 @@ dialog::backdrop { background: rgba(2,10,14,.94); }
   </section>
 </main>
 
-<footer>בנט סושיאל · <a href="mailto:yosibanet@gmail.com"><bdi dir="ltr">yosibanet@gmail.com</bdi></a></footer>
+<footer>בנט סושיאל · <a href="mailto:yosibanet@gmail.com"><bdi dir="ltr">yosibanet@gmail.com</bdi></a> · <a href="accessibility.html">הצהרת נגישות</a></footer>
 
 <nav class="bar" id="bar" aria-label="יצירת קשר">
   <a class="btn btn-wa" data-wa="היי יוסי, הגעתי מהאתר" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><use href="#wa"/></svg>וואטסאפ ליוסי</a>
@@ -233,7 +235,7 @@ dialog::backdrop { background: rgba(2,10,14,.94); }
 <dialog id="player" aria-label="נגן וידאו">
   <button class="x" type="button" id="p-x" aria-label="סגירה">×</button>
   <div class="p-in">
-    <video id="p-v" controls playsinline preload="none"></video>
+    <video id="p-v" controls playsinline preload="none" aria-label="סרטון העבודה"></video>
     <p class="p-cap" id="p-cap"></p>
     <a class="btn btn-wa" id="p-wa" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><use href="#wa"/></svg>אני רוצה סרטון כזה</a>
   </div>
@@ -251,7 +253,7 @@ dialog::backdrop { background: rgba(2,10,14,.94); }
   for (const a of document.querySelectorAll('[data-wa]')) a.href = wa(a.dataset.wa);
 
   const S = window.SITE || { works: [] }, byId = Object.fromEntries(S.works.map(w => [w.id, w]));
-  const lite = (navigator.connection && navigator.connection.saveData) || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lite = (navigator.connection && navigator.connection.saveData) || matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('a11y-still');
 
   const card = w => {
     const b = document.createElement('button');
@@ -317,5 +319,6 @@ dialog::backdrop { background: rgba(2,10,14,.94); }
   new IntersectionObserver(([e]) => bar.classList.toggle('show', !e.isIntersecting)).observe(document.querySelector('.hero-cta'));
 })();
 </script>
+<script src="assets/js/a11y.js?v=b1111h"></script>
 </body>
 </html>

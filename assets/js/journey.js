@@ -15,7 +15,8 @@
   const [IW, IH] = SITE.imageSize;                 // virtual image size all coordinates refer to
   const MOBILE_CROP = 0.75;                        // mobile frames = centre crop, width = 0.75 * height
   const conn = navigator.connection || {};
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // the accessibility menu's "stop motion" counts as reduced motion: the still version of the site
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('a11y-still');
   const slow = conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '');
   const isMobile = () => innerWidth < 768;
   const MAX_PLAY = () => (isMobile() ? 2 : 6);
