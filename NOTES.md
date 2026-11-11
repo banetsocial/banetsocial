@@ -322,3 +322,25 @@ Done in m.html (0 credits):
 - Added `gabbaim` (events, "ועידת הגבאים", client "מיט א ברען", Drive 13BS5Md…, preview start 8s). 0 credits.
 - Deploy tip: when a Pages deploy times out, start a NEW run (`gh workflow run pages.yml`), a rerun fails on duplicate artifacts.
 - Open: desktop walk as a real walking film (needs credits + Yossi's approval of the amount).
+
+## Round 10 — walk 2 as a real walk (proof, 75 credits approved by Yossi, 2026-11-11)
+| what | model | credits |
+|---|---|---|
+| business still edited so its arch shows the real events hall | gpt-image-2.5-sunburst/edit, 1K medium | 5 |
+| business → events walk, first→last frame, 5s 720p, no sound | kling-video/o3/standard/image-to-video | 70 |
+Balance 11,130.3 → 11,055.3.
+- The edit redraws the whole room slightly (SSIM vs old still 0.43 outside the arch), so the edited picture
+  IS the business room now: `stills/v6-business.png` → `rooms/business-*`. The business living loop was made from
+  the old picture, so it is parked in `loops/unused/` (the room stands still for now). t1 join rebuilt on the new still.
+- Clip: `transitions/v2/t2-walk.mp4` → `sequences/t2` (121 frames, 13MB d+m). t2 removed from build-joins / joins.json.
+- Result, checked frame by frame: walks forward, turns right, passes the arch with motion blur, hall opens, settles.
+  No furniture morphing. Small flaws: the carpet seen through the arch curves and then straightens; for a few
+  frames in the doorway a second piano shape shows.
+- QA: sweep PASS (0 spikes / 0 blank / 0 errors). clips.sh flags t2 end seam 0.835 (<0.90): the last Kling frame has
+  the same content as the events still but is softer; the 5-frame crossfade covers it. Start seam 0.989.
+- Prompt that worked (keep for t1/t3/t4): "One continuous first-person steadicam walk, eye level, no cuts. The camera
+  walks forward a few steps, turns right toward the glowing arched doorway where the next room is already visible,
+  walks straight through with natural motion blur as the door frame passes the lens, continues in and settles
+  centered. Real physical camera movement with parallax. Everything stays solid and fixed: nothing morphs. No people."
+- Next if approved: t1, t3, t4 the same way = 3 × 75 = 225. Each also replaces its room's living loop (a new loop is 70 more each).
+- Before/after: review/t2-before-after.mp4 (top = before, bottom = after).

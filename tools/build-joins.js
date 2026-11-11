@@ -21,8 +21,6 @@ const W = 1280, H = 714, FPS = 24, FADE = 0.6, DARK = '0x0b2a33';
 const WALKS = {
   t1: { a: { clip: 't1-kling.mp4', frames: 46, zoomFrom: 18, zoom: 1.3, arch: [[0, 0.84], [1.0, 0.81], [1.4, 0.78], [1.9, 0.72]], cy: 0.55 },
         b: { still: 'rooms/business-1280.webp', frames: 42, zoom: 0.7 } },
-  t2: { a: { clip: 't2-pro.mp4', freeze: true, frames: 54, zoomFrom: 0, zoom: 2.2, arch: [[0, 0.90]], cy: 0.58 },
-        b: { still: 'rooms/events-1280.webp', frames: 42, zoom: 0.7 } },
   t4: { a: { clip: 't4-kling.mp4', freeze: true, frames: 54, zoomFrom: 0, zoom: 2.2, arch: [[0, 0.895]], cy: 0.55 },
         b: { still: 'rooms/office-1280.webp', frames: 42, zoom: 0.7 } },
 };
