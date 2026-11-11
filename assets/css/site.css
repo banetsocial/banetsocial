@@ -332,11 +332,20 @@ html:not(.js) [data-reveal] .w { opacity: 1; transform: none; }
 .fly-ghost { position: fixed; z-index: 2; margin: 0; border-radius: 8px; background: #000 center / cover no-repeat;
   box-shadow: var(--glow); transform-origin: 50% 50%; will-change: transform; backface-visibility: visible; pointer-events: none; }
 
-/* ---------- Jump buttons: straight to a room without the walk (desktop) ---------- */
-.jump { position: absolute; z-index: 4; inset-block-start: clamp(14px, 3vh, 28px); inset-inline-start: var(--gutter); display: flex; gap: 8px; }
-.jump button, .jump a { font: 500 .95rem/1 var(--font-text, inherit); color: #fff; text-decoration: none; cursor: pointer; padding: 10px 16px; border-radius: 999px;
-  border: 1px solid rgba(216, 243, 247, .4); background: rgba(6, 26, 34, .6); backdrop-filter: blur(6px); transition: background .2s, border-color .2s; }
-.jump button:hover, .jump a:hover { border-color: var(--accent); background: rgba(6, 26, 34, .85); }
+/* ---------- Jump buttons: doors straight into a room, without the walk (desktop) ---------- */
+.jump { position: absolute; z-index: 4; inset-block-start: clamp(14px, 3vh, 28px); inset-inline-start: var(--gutter); display: flex; align-items: center; gap: 10px; }
+.jump-t { font: 500 .9rem/1 var(--font-text, inherit); color: var(--text); letter-spacing: .04em; text-shadow: 0 1px 10px rgba(0, 0, 0, .8); margin-inline-end: 2px; }
+.jump button, .jump a { display: flex; align-items: center; gap: 10px; font: 700 1.05rem/1 var(--font-display, inherit); color: #fff; text-decoration: none; cursor: pointer;
+  padding: 7px 18px 7px 8px; border-radius: 16px; border: 1px solid rgba(46, 196, 214, .6); background: rgba(6, 26, 34, .72); backdrop-filter: blur(8px);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, .35); transition: background .2s, border-color .2s, transform .2s, box-shadow .2s; }
+[dir="rtl"] .jump button { padding: 7px 8px 7px 18px; }
+.jump a { padding: 0 18px; min-block-size: 58px; }
+/* the little door: an arch with the room's picture in it */
+.jump i { flex: none; inline-size: 34px; block-size: 44px; border-radius: 17px 17px 3px 3px; background: #0B2A35 center / cover no-repeat;
+  box-shadow: 0 0 0 1.5px var(--accent), 0 0 12px rgba(46, 196, 214, .55); }
+.jump button:hover, .jump a:hover { border-color: var(--accent); background: rgba(6, 26, 34, .92); transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0, 0, 0, .45), 0 0 0 1px var(--accent); }
 .jump button.on { background: var(--accent); border-color: var(--accent); color: #04161C; }
+.jump button.on i { box-shadow: 0 0 0 1.5px #04161C; }
+@media (max-width: 1100px) { .jump-t { display: none; } .jump button, .jump a { font-size: .95rem; } }
 @media (max-width: 767px) { .jump { display: none; } }
 html:not(.js) .jump, .static .jump { display: none; }

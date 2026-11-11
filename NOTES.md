@@ -392,3 +392,12 @@ Balance 11,055.3 → 10,845.3. The 15 planned for image edits were not spent.
   Gotcha: in a JS String.replace replacement a doubled dollar sign becomes a single one; that broke the query-all helper once.
 - Aron Kodesh client: **גילופי מלכות** (from Yossi).
 - Still waiting from Yossi: 3–4 real client testimonial screenshots.
+
+## Round 14 — room doors and one address (2026-11-11)
+- Jump buttons redesigned as small doors: an arch with the room's own picture + "חדר העסקים / חדר האירועים / חדר ה־AI",
+  a "ישר לחדר" caption, bigger type, lit when you are in that room. Desktop only.
+- **One address for everyone:** phones opening the plain address are sent to m.html, and m.html then puts the plain
+  address back in the address bar (history.replaceState), so a link copied from a phone is the plain address.
+  A computer that opens m.html is sent to the journey. Overrides for testing: `index.html?full=1` (journey on a phone),
+  `m.html?m=1` (phone page on a computer). The two conditions are exact opposites, so there is no redirect loop.
+- Note: links I gave Yossi earlier ended in `?full=1`, which is why his phone showed the desktop journey.
