@@ -97,10 +97,10 @@ const MOTION = fs.existsSync(motionFile) ? JSON.parse(fs.readFileSync(motionFile
 // phones (portrait) see only the middle of each walk: how far to turn toward the arch on the right while
 // walking through it. Chosen by comparing 0 / 0.6 / 1 frame by frame: walk 1 barely turns by itself,
 // walk 4 heads straight into its arch.
-const PHONE_TURN = { t1: 1, t2: 0.6, t3: 0.9, t4: 0 };
+const PHONE_TURN = { t1: 1, t2: 0.6, t3: 0.6, t4: 0.6 };
 // two-part walks (into a doorway, a moment of dark, out of the next one): the phone turn only covers
 // the first part, up to the dark moment at this clip second
-const JOIN_AT = { t3: 4.62 };
+const JOIN_AT = {};
 // walks rebuilt by tools/build-joins.js: where their arch is in the picture, second by second — phones aim at it
 const joinsFile = path.join(__dirname, '..', 'assets/data/joins.json');
 const JOINS = fs.existsSync(joinsFile) ? JSON.parse(fs.readFileSync(joinsFile, 'utf8')) : {};

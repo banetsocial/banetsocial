@@ -344,3 +344,26 @@ Balance 11,130.3 → 11,055.3.
   centered. Real physical camera movement with parallax. Everything stays solid and fixed: nothing morphs. No people."
 - Next if approved: t1, t3, t4 the same way = 3 × 75 = 225. Each also replaces its room's living loop (a new loop is 70 more each).
 - Before/after: review/t2-before-after.mp4 (top = before, bottom = after).
+
+## Round 11 — walks 3 and 4 as real walks; walk 1 rejected (2026-11-11, 225 approved, 210 spent)
+| what | model | credits |
+|---|---|---|
+| t1 studio → business (REJECTED, not on the site) | kling-video/o3/standard, 5s 720p | 70 |
+| t3 events → AI | same | 70 |
+| t4 AI → office | same | 70 |
+Balance 11,055.3 → 10,845.3. The 15 planned for image edits were not spent.
+- **Arch view without AI:** the AI edit redraws the whole room (not alignable, SSIM 0.4), and uploads turn PNG into JPG so
+  mask inpainting is not available. Instead the next room's own still (centre slice) is pasted into the arch with a
+  feathered arch-shaped mask (ffmpeg). The room stays pixel-identical elsewhere, so arrivals stay seamless and the
+  living loops are kept: the same patch (`assets/media/arch/<room>.png`) is overlaid on `loops/src/<room>.mp4`.
+  Arch boxes (1280x714; L R top shoulder bottom): studio 1030 1143 100 167 436 · events 1107 1207 117 180 425 · ai 1087 1213 100 193 533.
+  Done for events and ai. Studio was reverted (see t1).
+- t3-walk, t4-walk: checked frame by frame — real turn + walk through the arch (t4: a stone pillar sweeps across the
+  lens, then the office). Seams: t3 0.984/0.971, t4 0.982/0.980. The journey is lighter: 693 frames instead of 789
+  (the old two-part t3 was 242 frames).
+- **t1 rejected:** the camera hardly moves; a ghost arch slides across the room and the tripods melt into the meeting
+  room — exactly the distortion we are removing. Kept in `transitions/v2/rejected/t1-walk-morph.mp4`, not used.
+  t1 stays on the old hidden-cut join and the studio keeps its old still and loop. Likely cause: the studio arch is
+  half hidden behind the camera tripod, so the model has no clear path. A retry needs approval (70).
+- JOIN_AT emptied, PHONE_TURN t3/t4 = 0.6, t4 removed from build-joins / joins.json.
+- QA: sweep PASS both sizes (0 spikes / 0 blank / 0 errors); clips.sh still flags only t2's soft landing (0.817).
