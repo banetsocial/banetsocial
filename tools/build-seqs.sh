@@ -39,3 +39,4 @@ for spec in $SPECS; do
   rm -rf "$out/tmp"
   echo "$id: $n frames $(du -sh "$out/d" | cut -f1) / $(du -sh "$out/m" | cut -f1)"
 done
+bash "$ROOT/tools/build-lite.sh" "$@"

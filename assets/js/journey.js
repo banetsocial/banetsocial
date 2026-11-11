@@ -203,6 +203,9 @@
 
   /* ---------- images ---------- */
   const stills = rooms.map(() => null);
+  // tiny blurred stand-ins (inline): a room whose picture has not arrived yet is never a black screen
+  const lq = rooms.map(r => { const im = new Image(); if (r.lqip) im.src = r.lqip; return im; });
+  let urgent = 0;                                         // room pictures on their way: the walks' frames give way
   // a copy of the still whose left edge fades out, so it melts into the room before it
   function feather(img) {
     const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
@@ -213,11 +216,18 @@
     g.fillStyle = gr; g.fillRect(0, 0, c.width, c.height);
     return c;
   }
+  function wake(i) {
+    for (const s of roomScreens[i] || []) if (s.el._poster) { s.el.style.backgroundImage = s.el._poster; s.el._poster = null; }
+  }
   function loadStill(i) {
     if (i < 0 || i >= rooms.length) return null;
     if (stills[i]) return stills[i];
-    const img = new Image(); img.decoding = 'async';
-    img.onload = () => { img._ok = true; if (i > 0) img._f = feather(img); schedule(); };
+    // the room's screens get their posters only once the room's own picture is in (30 posters at
+    // once used to hold up the first picture on a slow line)
+    const img = new Image(); img.decoding = 'async'; img.fetchPriority = 'high';
+    urgent++;
+    img.onload = () => { img._ok = true; urgent--; if (i > 0) img._f = feather(img); wake(i); schedule(); pump(); };
+    img.onerror = () => { urgent--; wake(i); pump(); };
     img.src = `${rooms[i].still}-1280.webp`;
     return (stills[i] = img);
   }
@@ -226,7 +236,7 @@
   function loadScene(name) {
     if (!SC[name]) return null;
     if (sceneImg[name]) return sceneImg[name];
-    const img = new Image(); img.decoding = 'async';
+    const img = new Image(); img.decoding = 'async'; img.fetchPriority = 'high';
     img.onload = () => { img._ok = true; schedule(); };
     img.src = `${SC[name].still}-1280.webp`;
     return (sceneImg[name] = img);
@@ -241,34 +251,55 @@
   // Frames come down a few at a time, in a set order: the walk you are in (or about to enter) first,
   // and within a walk every 4th frame, then every 2nd, then the rest — so a rough walk is usable at
   // once and sharpens as you go. A frame that fails is tried again; nothing stays missing.
-  const PARALLEL = 8, queue = [];
-  let busy = 0;
+  // Slow lines: every walk also has a light copy (every 3rd frame, 480 wide, ~10 KB a frame). All the
+  // light copies come down before any full frame, so every walk moves almost at once and sharpens later.
+  const PARALLEL = 8, queue = [], quick = [], LITE_STEP = 3, liteImgs = {};
+  let busy = 0, kicked = false;                          // nothing of the walks before the first picture is in
   const load = window.__journeyLoad = { want: 0, got: 0 };
   function pump() {
-    while (busy < PARALLEL && queue.length) {
-      const job = queue.shift(); busy++;
+    if (!kicked) return;
+    while (busy < (urgent > 0 ? 2 : PARALLEL) && (quick.length || queue.length)) {
+      const job = quick.shift() || queue.shift(); busy++;
       const img = job.img;
       img.onload = () => { img._ok = true; busy--; load.got++; schedule(); pump(); };
       img.onerror = () => {
         busy--;
-        if (++job.tries < 4) setTimeout(() => { queue.unshift(job); pump(); }, 400 * job.tries);
+        if (++job.tries < 4) setTimeout(() => { (job.lite ? quick : queue).unshift(job); pump(); }, 400 * job.tries);
         else load.got++;                                   // give up on this one; its neighbours stand in
         pump();
       };
+      if (job.lite) img.fetchPriority = 'high';
       img.src = job.url + (job.tries ? '?r=' + job.tries : '');
     }
   }
+  const toFront = (list, id) => {
+    const mine = list.filter(j => j.id === id);
+    if (mine.length) { const rest = list.filter(j => j.id !== id); list.length = 0; list.push(...mine, ...rest); }
+  };
+  function loadLite(id, now = false) {
+    const q = SEQ[id];
+    if (!q || liteImgs[id]) return;
+    const imgs = liteImgs[id] = [], base = q.desktop.replace(/d\/$/, 'l/');
+    const order = [];
+    for (const step of [LITE_STEP * 4, LITE_STEP * 2, LITE_STEP]) for (let i = 0; i < q.frames; i += step) if (!order.includes(i)) order.push(i);
+    const jobs = order.map(i => {
+      const img = new Image(); img.decoding = 'async';
+      imgs[i] = img;
+      return { id, img, lite: true, url: base + String(i + 1).padStart(4, '0') + '.webp', tries: 0 };
+    });
+    load.want += jobs.length;
+    if (now) quick.unshift(...jobs); else quick.push(...jobs);
+    pump();
+  }
+  const liteReady = id => !SEQ[id] || (!!liteImgs[id] && liteImgs[id].every(im => im._ok));
   let front = null;
   function loadSeq(id, now = false) {
     const q = SEQ[id];
     if (!q) return;
+    loadLite(id, now);
     if (seqImgs[id]) {
       // already asked for: if this is the walk on screen, move what is still waiting to the front
-      if (now && front !== id) {
-        front = id;
-        const mine = queue.filter(j => j.id === id);
-        if (mine.length) { const rest = queue.filter(j => j.id !== id); queue.length = 0; queue.push(...mine, ...rest); }
-      }
+      if (now && front !== id) { front = id; toFront(quick, id); toFront(queue, id); }
       return;
     }
     const imgs = seqImgs[id] = [], base = M ? q.mobile : q.desktop;
@@ -306,12 +337,18 @@
     }
     // not everything has arrived yet: glide between the nearest frames that have (one behind, one
     // ahead) instead of holding one and then jumping — a slightly soft walk, never a stuck one
+    // (a full frame where there is one, otherwise the light copy of that frame)
+    const lite = liteImgs[id] || [];
+    const at = i => (imgs[i] && imgs[i]._ok ? imgs[i] : lite[i] && lite[i]._ok ? lite[i] : null);
     let lo = -1, hi = -1;
-    for (let i = i0; i >= 0; i--) if (imgs[i] && imgs[i]._ok) { lo = i; break; }
-    for (let i = i1; i < q.frames; i++) if (imgs[i] && imgs[i]._ok) { hi = i; break; }
+    for (let i = i0; i >= 0; i--) if (at(i)) { lo = i; break; }
+    for (let i = i1; i < q.frames; i++) if (at(i)) { hi = i; break; }
     if (lo < 0 && hi < 0) return null;
-    if (lo < 0 || hi < 0 || lo === hi) { const a = imgs[lo < 0 ? hi : lo]; return { a, b: a, f: 0 }; }
-    return { a: imgs[lo], b: imgs[hi], f: Math.min(1, Math.max(0, (pos - lo) / (hi - lo))) };
+    if (lo < 0 || hi < 0 || lo === hi) { const a = at(lo < 0 ? hi : lo); return { a, b: a, f: 0 }; }
+    // close neighbours glide into each other; frames far apart would show as a double picture,
+    // so those hold and then cross over quickly in the middle
+    const f = Math.min(1, Math.max(0, (pos - lo) / (hi - lo)));
+    return { a: at(lo), b: at(hi), f: hi - lo <= LITE_STEP + 1 ? f : Math.min(1, Math.max(0, (f - 0.4) / 0.2)) };
   }
   // draw a walk frame (pair) with one camera
   function paintPair(fr, cx, cy, z) {
@@ -433,6 +470,8 @@
         // the next room's left edge fades so the two rooms melt together
         const pic = only < 0 && img._f && x0 > cam.x - halfW ? img._f : img;
         ctx.drawImage(pic, view.w / 2 + (x0 - cam.x) * S, top, IW * S, IH * S);
+      } else if (lq[i].complete && lq[i].naturalWidth) {
+        ctx.drawImage(lq[i], view.w / 2 + (x0 - cam.x) * S, top, IW * S, IH * S);
       }
       if (o > 0.01) {
         // same affine map as the canvas: room-relative layout → panorama → camera
@@ -520,6 +559,7 @@
     room.screens.forEach((q, k) => { if (side[k]) list.push({ quad: q, work: side[k], portal: false }); });
     for (const s of list) {
       const el = card(s.work, 'screen' + (s.portal ? ' portal' : ' side'));
+      el._poster = el.style.backgroundImage; el.style.backgroundImage = `url('${s.work.lqip}')`;
       el.dataset.room = ri; el.inert = true; el.tabIndex = -1;
       s.el = el; layers[ri].append(el);
     }
@@ -637,10 +677,11 @@
     current.seg = seg; current.t = t;
 
     if (seg.type === 'intro') {
-      const ext = useLoop('exterior') || loadScene('exterior');
+      // the living loop waits for the first picture and for the front-door walk's light copy
+      const still = loadScene('exterior'), ext = (still && still._ok && liteReady('enter') && useLoop('exterior')) || still;
       clearStage(ext); paint(ext, IW / 2, IH / 2, 1 + REST_ZOOM * t);
       hideLayers(); setUI(0); setVideoRoom(-1);
-      loadStill(0); loadSeq('enter');
+      if (kicked) { loadStill(0); loadSeq('enter'); }
     } else if (seg.type === 'enter' && seqFrame('enter', t)) {
       // the clip starts on the exterior still; carry over the small creep-in of the intro and let it go
       const fr = seqFrame('enter', t), z = 1 + REST_ZOOM * (1 - ease(band(t, 0, 0.35)));
@@ -671,7 +712,7 @@
       draw(clampCam(restCam(seg.room, t)), { [seg.room]: solo ? ease(band(t, 0, 0.1)) : 1 }, solo ? seg.room : -1, live);
       setVideoRoom(seg.room); setUI(seg.room);
       loadStill(seg.room + 1);
-      loadSeq(seg.room === LAST ? 'exit' : 't' + (seg.room + 1));
+      loadSeq(seg.room === LAST ? 'exit' : 't' + (seg.room + 1), true);
       if (seg.room === LAST) loadScene('beach');
     } else if (seqFrame(transId(seg), t)) {
       // through the arch into the next room: the real walk, scrubbed by the scroll
@@ -729,7 +770,11 @@
   // stop everything when the tab is hidden
   document.addEventListener('visibilitychange', () => { if (document.hidden) playing.forEach(v => v.pause()); else playing.forEach(v => v.play().catch(() => {})); });
 
-  loadScene('exterior'); loadStill(0); loadStill(1);
+  // order on a slow line: the first picture, then a light copy of every walk, then everything else
+  const kick = () => { if (kicked) return; kicked = true; loadLite('enter', true); for (const id in SEQ) loadLite(id); pump(); schedule(); };
+  const first = loadScene('exterior');
+  if (first) first.addEventListener('load', kick); else kick();
+  setTimeout(kick, 4000);
   resize();
 
   /* =====================================================================

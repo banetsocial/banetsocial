@@ -401,3 +401,25 @@ Balance 11,055.3 → 10,845.3. The 15 planned for image edits were not spent.
   A computer that opens m.html is sent to the journey. Overrides for testing: `index.html?full=1` (journey on a phone),
   `m.html?m=1` (phone page on a computer). The two conditions are exact opposites, so there is no redirect loop.
 - Note: links I gave Yossi earlier ended in `?full=1`, which is why his phone showed the desktop journey.
+
+## Round 15 — slow connections (2026-11-11)
+Yossi: "stuck on the computer, scrolling is bad, maybe the walks don't load because of reception". Measured on his
+computer: about 700 kbit/s, 650 ms latency. At that speed one walk (5 MB of frames) takes close to a minute, and
+30 work posters were loading before the first picture (exterior still arrived after ~12 s).
+- **Light copy of every walk:** `assets/media/sequences/<id>/l/` = every 3rd frame, 480x268, q40 (about 0.4 MB a walk).
+  Built by `tools/build-lite.sh` (also called at the end of build-seqs.sh). journey.js loads all light copies before
+  any full frame (`quick` queue, `loadLite`), and `seqFrame` uses a light frame wherever the full one is missing.
+- **Load order:** exterior still first (preloaded with high priority; nothing of the walks starts before it, 4 s
+  safety timeout) → light copy of the front-door walk → the rest. While a room picture is on its way the walk frames
+  drop to 2 at a time (`urgent`). The exterior living loop waits for the front-door light copy.
+- **Posters are lazy:** a room's screens get their posters only after that room's own picture has loaded (`wake`).
+- **No black screen:** a room whose picture has not arrived is drawn from its inline blurred stand-in (`lq`).
+- **No double picture:** frames far apart (still loading) hold and cross over quickly instead of a long blend.
+- Jump-button thumbnails are now 80x96 files (`rooms/<id>-thumb.webp`, 1.5 KB each instead of 35 KB).
+- Redirect guard: `screen.width` of 0 (hidden/embedded window) no longer counts as a phone.
+- Test: `node tools/qa/slow.mjs [url] [kbps] [latencyMs]` (throttled headless Chrome). Local result at 700 kbit/s:
+  first picture 4.7 s, front-door walk usable ~9–12 s (before: no walk frames at all in that time). The local server
+  is HTTP/1.1, the live site is HTTP/2, so live should be somewhat better. Normal-speed QA unchanged
+  (same two known flags: t2 landing, t4 phone spike).
+- Not checked: whether part of the stutter is the computer itself (CPU), the browser pane was hidden so frame
+  timing could not be measured.
